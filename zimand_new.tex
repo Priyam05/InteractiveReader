@@ -1,0 +1,594 @@
+\documentclass[proceedings]{stacs}
+\stacsheading{2009}{697--708}{Freiburg}
+\firstpageno{697}
+
+%\usepackage{amsmath}
+\usepackage{amssymb}
+
+%\input{macros.tex}
+\def\zo{\{0,1\}}
+\newcommand{\ie}{<<equation>>$\mbox{i.e.}$<</equation>>}
+\def\mapping{\rightarrow}
+\newcommand{\nat}{{\mathbb N}}
+\newcommand{\real}{{\mathbb R}}
+\newcommand{\rest}{{\upharpoonright}}
+
+\newcommand{\prg}{{pseudo-random generator~}}
+\newcommand{\prgs}{{pseudo-random generators~}}
+\newcommand{\zon}{\zo^n}
+\newcommand{\pref}{{\rm pref}}
+%\newcommand{\lll}{\lVert}
+%\newcommand{\rrr}{\rVert}
+\newcommand{\dimm}{\rm dim}
+\newcommand{\myrule}{\shortrule}
+\newcommand{\bb}{m- (1-\delta^{-})d}
+\newcommand{\barx}{\overline{x}}
+\newcommand{\bary}{\overline{y}}
+\newcommand{\barxy}{\barx_{i-1}\bary_{i-1}}
+\newcommand{\shortrule}{
+\noindent
+\rule{5cm}{0.5pt}
+%\rule{5cm}{2pt}
+}
+%\newcommand{\proof}{{\bf Proof}}
+\newcommand{\informal}{\emph{\small INFORMAL STATEMENT: }}
+\newcommand{\formal}{\emph{\small FORMAL STATEMENT: }}
+\newcommand{\tn}{\tilde{n}}
+\newcommand{\tmm}{\tilde{m}}
+\newcommand{\teps}{\tilde{\epsilon}}
+\newcommand{\tdelta}{\tilde{\delta}}
+\newcommand{\td}{d}
+\newcommand{\tm}{m}
+\newcommand{\tepsilon}{\epsilon}
+\newcommand{\ext}{\rm Ext}
+\newcommand{\samp}{\rm Sample}
+\newcommand{\barz}{\overline{z}}
+\newcommand{\barv}{\overline{v}}
+\newcommand{\baru}{\overline{u}}
+\newcommand{\barw}{\overline{w}}
+\newcommand{\barR}{\overline{R}}
+\newcommand{\polylog}{{\rm polylog}}
+% Make margins a bit thinner and text a bit wider.
+%  Submission/TR/Journal/etc. size
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\begin{document}
+\title[Extracting Kolmogorov complexity]{Extracting the Kolmogorov complexity of strings and sequences from sources with limited independence}
+
+\author[Towson]{M. Zimand}{Marius Zimand}
+% \address[ref]{Address of authors with ref as reference}
+\address[Towson]{Department of Computer and Information Sciences
+  \newline Towson University}  %required
+\email{mzimand@towson.edu}  %optional
+\urladdr{http://triton.towson.edu/\~{}mzimand}  %optional
+\thanks{The author is supported by NSF grant CCF 0634830.}
+
+\keywords{algorithmic information theory, computational complexity, Kolmogorov complexity, randomness extractors}
+%\subjclass{PREFERRED list of ACM classifications}
+
+
+\begin{abstract} 
+An infinite binary sequence has randomness rate at least <<equation>>$<<symbol>>\sigma<</symbol>>$<</equation>> if, for almost every <<equation>>$<<symbol>>n<</symbol>>$<</equation>>, the Kolmogorov complexity of its prefix of length <<equation>>$<<symbol>>n<</symbol>>$<</equation>> is at least <<equation>>$<<symbol>>\sigma <<symbol>><</symbol>>n<</symbol>>$<</equation>>. It is known that for every rational <<equation>>$<<symbol>>\sigma <</symbol>>\in (0,1)$<</equation>>, on one hand,  there exists sequences with randomness rate <<equation>>$<<symbol>>\sigma<</symbol>>$<</equation>>  that can not  be effectively transformed into a sequence with randomness rate higher than <<equation>>$<<symbol>>\sigma<</symbol>>$<</equation>> and, on the other hand, any two independent sequences with randomness rate <<equation>>$<<symbol>>\sigma<</symbol>>$<</equation>> can be transformed into a sequence with randomness rate higher than <<equation>>$<<symbol>>\sigma<</symbol>>$<</equation>>. We show that the latter result holds even if the two input sequences have linear dependency (which, informally speaking, means that all prefixes of length <<equation>>$<<symbol>>n<</symbol>>$<</equation>> of the two sequences have in common a constant fraction of their information).  The similar problem is studied for finite strings. It is shown that from any two strings with sufficiently large Kolmogorov complexity and sufficiently small dependence, one can effectively construct a string that is random even conditioned by any one of the input strings.
+\end{abstract}
+
+
+
+\maketitle
+
+
+
+\section{Introduction}
+
+The randomness rate of an object is the ratio between the information in the object and its length. An informal principle states that no reasonable transformation can guarantee an increase of the randomness rate. The principle has different instantiations depending on the meaning of ``object'', ``information,'' and ``reasonable transformation.'' For example, if <<equation>>$<<symbol>>f<</symbol>>$<</equation>> is a mapping of the set of <<equation>>$<<symbol>>n<</symbol>>$<</equation>>-bit strings to the set of <<equation>>$<<symbol>>m<</symbol>>$<</equation>>-bit strings, then there is a distribution <<equation>>$<<symbol>>X<</symbol>>$<</equation>> on the set of <<equation>>$<<symbol>>n<</symbol>>$<</equation>>-bit strings with Shannon entropy <<equation>>$<<symbol>>n<<symbol>><</symbol>>/<</symbol>>2$<</equation>> (\ie,  the randomness rate of <<equation>>$<<symbol>>X<</symbol>>$<</equation>> is <<equation>>$1<<symbol>>/<</symbol>>2$<</equation>>) and the Shannon entropy of <<equation>>$<<symbol>>f<</symbol>>(<<symbol>>X<</symbol>>)$<</equation>> is <<equation>>$\leq <<symbol>>m<<symbol>><</symbol>>/<</symbol>>2$<</equation>> (\ie, the randomness rate of <<equation>>$<<symbol>>f<</symbol>>(<<symbol>>X<</symbol>>)$<</equation>> is <<equation>>$\leq 1<<symbol>>/<</symbol>>2$<</equation>>). Thus no transformation <<equation>>$<<symbol>>f<</symbol>>$<</equation>> guarantees that its output has a randomness rate higher than that of its input. The case of infinite binary sequences (in short, sequences) is very interesting and has been recently the subject of intensive research. We say that a sequence <<equation>>$<<symbol>>x<</symbol>>$<</equation>> has randomness rate at least <<equation>>$<<symbol>>\sigma<</symbol>>$<</equation>> if <<equation>>$K(x \rest n) \geq \sigma \cdot n$<</equation>>, for all sufficiently large <<equation>>$<<symbol>>n<</symbol>>$<</equation>>. Here, <<equation>>$x \rest n$<</equation>> is the prefix of length <<equation>>$<<symbol>>n<</symbol>>$<</equation>> of <<equation>>$<<symbol>>x<</symbol>>$<</equation>> and <<equation>>$<<symbol>>K<</symbol>>(\cdot)$<</equation>> is the Kolmogorov complexity. A related notion is that of effective Hausdorff dimension of a sequence <<equation>>$<<symbol>>x<</symbol>>$<</equation>>, defined as: <<equation>>$\dimm(x) = \lim \inf K(x \rest n)/n$<</equation>>. Reiman and Terwijn~\cite{rei:t:thesis} have asked whether for any sequence <<equation>>$<<symbol>>x<</symbol>>$<</equation>> with <<equation>>$\dimm(x) = 1/2$<</equation>> there exists an effective transformation (formally, a Turing reduction) <<equation>>$<<symbol>>f<</symbol>>$<</equation>> such that <<equation>>$\dimm(f(x)) > 1/2$<</equation>>. Initially, some partial negative results have been obtained for transformations <<equation>>$<<symbol>>f<</symbol>>$<</equation>> with certain restrictions.  Reimann and Terwijn~\cite[Th 3.10]{rei:t:thesis}   have shown that the answer is NO if we require that <<equation>>$<<symbol>>f<</symbol>>$<</equation>> is a many-one reduction.  This result has been extended by Nies and Reimann~\cite{nie-rei:c:wtt-Kolm-increase} to wtt-reductions.
+Bienvenu, Doty, and Stephan~\cite{bie-dot-ste:c:haussdimension}  have obtained an impossibility result for the general case of Turing reductions, which, however, is valid only for \emph{uniform} transformations. More precisely, building on the result of Nies and Reimann, they have shown that for all constants <<equation>>$<<symbol>><<symbol>>c<</symbol>><</symbol>>_1$<</equation>> and <<equation>>$<<symbol>><<symbol>>c<</symbol>><</symbol>>_2$<</equation>>, with <<equation>>$0 < <<symbol>><<symbol>>c<</symbol>><</symbol>>_1 < <<symbol>><<symbol>>c<</symbol>><</symbol>>_2 < 1$<</equation>>, there is no Turing reduction <<equation>>$<<symbol>>f<</symbol>>$<</equation>> such that for any sequence <<equation>>$<<symbol>>x<</symbol>>$<</equation>> with <<equation>>$\dimm(x) \geq c_1$<</equation>>  has the property that <<equation>>$\dimm(f(x)) \geq c_2$<</equation>>. In other words, loosely speaking, no effective uniform transformation is able to raise the randomness rate from <<equation>>$<<symbol>><<symbol>>c<</symbol>><</symbol>>_1$<</equation>> to <<equation>>$<<symbol>><<symbol>>c<</symbol>><</symbol>>_2$<</equation>>. Finally, very recently, Miller~\cite{mill:t:KolmExtract} has fully solved the original question, by constructing a sequence <<equation>>$<<symbol>>x<</symbol>>$<</equation>> with <<equation>>$\dimm(x) = 1/2$<</equation>> such that, for any Turing reduction <<equation>>$<<symbol>>f<</symbol>>$<</equation>>, <<equation>>$\dimm(f(x)) \leq 1/2$<</equation>> (or <<equation>>$<<symbol>>f<</symbol>>(<<symbol>>x<</symbol>>)$<</equation>> does not exist). 
+
+On the other hand, Zimand~\cite{zim:c:csr} has shown that it is possible to increase the randomness rate if the input consists of \emph{two sequences} that enjoy a certain type of \emph{independence}.   
+Namely, we say that two sequences <<equation>>$<<symbol>>x<</symbol>>$<</equation>> and <<equation>>$<<symbol>>y<</symbol>>$<</equation>> are finitary-independent\footnote{In~\cite{zim:c:csr}, such sequences are called independent. The paper~\cite{cal-zim:c:dlt08} examines thoroughly the concept of algorithmic independence for sequences and introduces besides finitary-independence, a stronger concept which is called independence. We adopt here the terminology from~\cite{cal-zim:c:dlt08}.}  if for all <<equation>>$<<symbol>>n<</symbol>>$<</equation>> and <<equation>>$<<symbol>>m<</symbol>>$<</equation>>, 
+<<equation>>\begin{equation}
+\label{e:fin-indep}
+K(x \rest n ~y \rest m) \geq K(x \rest n) + K(y \rest m) - O(\max (\log n, \log m)).
+\end{equation}<</equation>>
+In~\cite{zim:c:csr}, it is shown that for any constant <<equation>>$0 < <<symbol>>\tau <</symbol>>\leq 1$<</equation>>, there is a Turing reduction <<equation>>$<<symbol>>f<</symbol>>$<</equation>> such that, for any finitary-independent sequences <<equation>>$<<symbol>>x<</symbol>>$<</equation>> and <<equation>>$<<symbol>>y<</symbol>>$<</equation>>, both with randomness rate <<equation>>$\geq <<symbol>>\tau<</symbol>>$<</equation>>, it holds that <<equation>>$<<symbol>>f<</symbol>>(<<symbol>>x<</symbol>>,<<symbol>>y<</symbol>>)$<</equation>> has randomness rate arbitrarily close to <<equation>>$1$<</equation>> (in particular, <<equation>>$\dimm(f(x,y)) = 1$<</equation>>). Moreover <<equation>>$<<symbol>>f<</symbol>>$<</equation>> is a truth-table reduction and also <<equation>>$<<symbol>>f<</symbol>>$<</equation>> is uniform in <<equation>>$<<symbol>>\tau<</symbol>>$<</equation>>.
+
+To summarize, if we start with one source, it is impossible to effectively increase the randomness rate, while if we start with two finitary-independent sequences it is possible to increase the randomness rate to close to <<equation>>$1$<</equation>> in a uniform and truth-table manner.
+
+It is clear that the independence requirement plays an important role in the positive result. Since independence can be quantified, it is interesting to see what level of independence is needed for a positive result.
+
+For a function <<equation>>$d: \nat \mapping \real$<</equation>>, we say that strings <<equation>>$<<symbol>>u<</symbol>>$<</equation>> and <<equation>>$<<symbol>>v<</symbol>>$<</equation>> have dependency <<equation>>$<<symbol>>d<</symbol>>$<</equation>> if <<equation>>$<<symbol>>K<</symbol>>(<<symbol>>u<</symbol>>) + <<symbol>>K<</symbol>>(<<symbol>>v<</symbol>>) - <<symbol>>K<</symbol>>(<<symbol>>u<<symbol>><</symbol>>v<</symbol>>)  \leq <<symbol>>d<</symbol>>(\max(<<symbol>>|<<symbol>><</symbol>>u<<symbol>><</symbol>>|<</symbol>>,<<symbol>>|<<symbol>><</symbol>>v<<symbol>><</symbol>>|<</symbol>>))$<</equation>>; we say that two sequences <<equation>>$<<symbol>>x<</symbol>>$<</equation>> and <<equation>>$<<symbol>>y<</symbol>>$<</equation>> have dependency <<equation>>$<<symbol>>d<</symbol>>$<</equation>> if, for every <<equation>>$<<symbol>>n<</symbol>>$<</equation>> and <<equation>>$<<symbol>>m<</symbol>>$<</equation>> sufficiently large, the strings <<equation>>$x\rest n$<</equation>> and <<equation>>$y \rest m$<</equation>> have dependency <<equation>>$<<symbol>>d<</symbol>>$<</equation>>. With this terminology, sequences <<equation>>$<<symbol>>x<</symbol>>$<</equation>> and <<equation>>$<<symbol>>y<</symbol>>$<</equation>> are finitary-independent if they have dependency <<equation>>$<<symbol>>c<</symbol>> \cdot \log <<symbol>>n<</symbol>>$<</equation>>, for some positive constant <<equation>>$<<symbol>>c<</symbol>>$<</equation>>. 
+
+The question becomes: How large can <<equation>>$<<symbol>>d<</symbol>>$<</equation>> be so that an effective increase of the randomness rate is possible from two sequences with dependency <<equation>>$<<symbol>>d<</symbol>>$<</equation>>?
+Miller's result shows that this is impossible for dependency <<equation>>$<<symbol>>d<</symbol>>(<<symbol>>n<</symbol>>) = <<symbol>>n<</symbol>>$<</equation>>, while the result in~\cite{zim:c:csr} shows that this is possible for dependency <<equation>>$<<symbol>>d<</symbol>>(<<symbol>>n<</symbol>>) = <<symbol>>c<</symbol>> \cdot \log <<symbol>>n<</symbol>>$<</equation>>. In fact, \cite{zim:c:csr} shows that, for certain combinations of parameters, an effective increase is possible even for dependency <<equation>>$<<symbol>>d<</symbol>>(<<symbol>>n<</symbol>>) = <<symbol>><<symbol>>n<</symbol>>^<<symbol>>\alpha<</symbol>><</symbol>>$<</equation>>, for some <<equation>>$0 < <<symbol>>\alpha <</symbol>>< 1$<</equation>>. More precisely, it is shown that for any <<equation>>$<<symbol>>\tau <</symbol>>> 0$<</equation>> and <<equation>>$<<symbol>>\delta <</symbol>>> 0$<</equation>>, there exists <<equation>>$0 < <<symbol>>\alpha <</symbol>>< 1$<</equation>> and a truth-table reduction <<equation>>$<<symbol>>f<</symbol>>$<</equation>> such that for any sequences <<equation>>$<<symbol>>x<</symbol>>$<</equation>> and <<equation>>$<<symbol>>y<</symbol>>$<</equation>> that have randomness rate <<equation>>$<<symbol>>\tau<</symbol>>$<</equation>> and dependency <<equation>>$<<symbol>>d<</symbol>>(<<symbol>>n<</symbol>>) = <<symbol>><<symbol>>n<</symbol>>^<<symbol>>\alpha<</symbol>><</symbol>>$<</equation>>, it holds that <<equation>>$<<symbol>>f<</symbol>>(<<symbol>>x<</symbol>>,<<symbol>>y<</symbol>>)$<</equation>> has randomness rate <<equation>>$1 - <<symbol>>\delta<</symbol>>$<</equation>>.
+
+In this paper, we improve the above result and show that one can effectively increase the randomness rate even for two  input sources that have linear dependency. More formally, our result is:
+\begin{itemize}
+\item[(1)] We show that for every <<equation>>$0< <<symbol>>\tau <</symbol>>\leq 1$<</equation>> and <<equation>>$<<symbol>>\delta <</symbol>>> 0$<</equation>>, there exist <<equation>>$0< <<symbol>>\alpha <</symbol>>< 1$<</equation>> and a truth-table reduction <<equation>>$<<symbol>>f<</symbol>>$<</equation>> such that for any sequences <<equation>>$<<symbol>>x<</symbol>>$<</equation>> and <<equation>>$<<symbol>>y<</symbol>>$<</equation>> with randomness rate <<equation>>$<<symbol>>\tau<</symbol>>$<</equation>> and dependency <<equation>>$<<symbol>>d<</symbol>>(<<symbol>>n<</symbol>>) = <<symbol>>\alpha  <<symbol>><</symbol>>n<</symbol>>$<</equation>>, the sequence <<equation>>$<<symbol>>f<</symbol>>(<<symbol>>x<</symbol>>,<<symbol>>y<</symbol>>)$<</equation>> has randomness rate <<equation>>$\geq (1 - <<symbol>>\delta<</symbol>>)$<</equation>>.
+
+\end{itemize}
+
+We also study the finite version of the problem, when the input consists of strings.  Similarly to the infinite case, our interest is in determining how many input strings and what level of dependency are necessary in order to exist an effective procedure that extracts Kolmogorov complexity. Vereshchagin and Vyugin~\cite[Th. 4]{ver-vyu:j:kolm} have shown that one input string is not enough. They construct a string <<equation>>$<<symbol>>x<</symbol>>$<</equation>> so that any shorter string that has small Kolmogorov complexity conditioned by <<equation>>$<<symbol>>x<</symbol>>$<</equation>> (in particular any string effectively constructed from <<equation>>$<<symbol>>x<</symbol>>$<</equation>>) has small Kolmogorov complexity unconditionally. On the other hand, Fortnow, Hitchcock, Pavan, Vinodchandran and Wang~\cite{fhpvw:c:extractKol} show that an input consisting of several independent strings can accomplish the task, when the number of strings in the input depends on the complexity of the strings. Formally, they show that, for any <<equation>>$<<symbol>>\sigma<</symbol>>$<</equation>> there exists a constant <<equation>>$<<symbol>>\ell<</symbol>>$<</equation>> and a polynomial-time procedure
+that from an input consisting of <<equation>>$<<symbol>>\ell<</symbol>>$<</equation>> <<equation>>$<<symbol>>n<</symbol>>$<</equation>>-bit strings <<equation>>$<<symbol>><<symbol>>x<</symbol>><</symbol>>_1, \ldots, <<symbol>><<symbol>>x<</symbol>>_<<symbol>>\ell<</symbol>><</symbol>>$<</equation>>, each with Kolmogorov complexity at least <<equation>>$<<symbol>>\sigma <<symbol>><</symbol>>n<</symbol>>$<</equation>>, constructs
+an <<equation>>$<<symbol>>n<</symbol>>$<</equation>>-bit string with Kolmogorov complexity <<equation>>$\succeq <<symbol>>n<</symbol>> - {\rm <<symbol>>d<<symbol>><</symbol>>e<<symbol>><</symbol>>p<</symbol>>}(<<symbol>><<symbol>>x<</symbol>><</symbol>>_1, \ldots, <<symbol>><<symbol>>x<</symbol>>_<<symbol>>\ell<</symbol>><</symbol>>)$<</equation>> (<<equation>>${\rm <<symbol>>d<<symbol>><</symbol>>e<<symbol>><</symbol>>p<</symbol>>}(<<symbol>><<symbol>>x<</symbol>><</symbol>>_1, \ldots, <<symbol>><<symbol>>x<</symbol>>_<<symbol>>\ell<</symbol>><</symbol>>) = \sum_{<<symbol>><<symbol>>i<</symbol>>=1}^<<symbol>>{\ell}<</symbol>><</symbol>> <<symbol>>K<</symbol>>(<<symbol>><<symbol>>x<</symbol>>_<<symbol>>i<</symbol>><</symbol>>) - <<symbol>>K<</symbol>>(<<symbol>><<symbol>>x<</symbol>><</symbol>>_1 \ldots <<symbol>><<symbol>>x<</symbol>>_<<symbol>>\ell<</symbol>><</symbol>>)$<</equation>> and <<equation>>$\succeq$<</equation>> means that the inequality holds within an error of <<equation>>$<<symbol>>O<</symbol>>(\log <<symbol>>n<</symbol>>)$<</equation>>). In view of Vereshchagin-Vyugin result, the question is whether effective extraction of Kolmogorov complexity is possible from two input strings. 
+We have two results in this regard:
+\begin{itemize}
+\item [(2)] We show that if strings <<equation>>$<<symbol>>x<</symbol>>$<</equation>> and <<equation>>$<<symbol>>y<</symbol>>$<</equation>> of length <<equation>>$<<symbol>>n<</symbol>>$<</equation>> have dependency <<equation>>$<<symbol>>\alpha <<symbol>><</symbol>>n<</symbol>>$<</equation>> and complexity <<equation>>$<<symbol>>\sigma <<symbol>><</symbol>>n<</symbol>>$<</equation>>, then it is possible to effectively construct a string of length <<equation>>$\approx 2<<symbol>>\sigma <</symbol>>\cdot <<symbol>>n<</symbol>>$<</equation>> and complexity <<equation>>$\succeq (2<<symbol>>\sigma <</symbol>>- <<symbol>>\alpha<</symbol>>) \cdot <<symbol>>n<</symbol>>$<</equation>>, where <<equation>>$\approx$<</equation>> (<<equation>>$\succeq$<</equation>>)  means that the equality (resp., the inequality) is within an error of <<equation>>$<<symbol>>O<</symbol>>(\log <<symbol>>n<</symbol>>)$<</equation>>. The construction is uniform in <<equation>>$<<symbol>>x<</symbol>>,<<symbol>>y<</symbol>>, <<symbol>>\alpha<</symbol>>, <<symbol>>\sigma<</symbol>>$<</equation>>. Note, however, that unlike the procedure from~\cite{fhpvw:c:extractKol}, the construction does not run in polynomial time.
+\item[(3)] Our second result shows that from strings <<equation>>$<<symbol>>x<</symbol>>$<</equation>> and <<equation>>$<<symbol>>y<</symbol>>$<</equation>>,  with sufficiently large complexity and sufficiently small dependency, it is possible to construct a string <<equation>>$<<symbol>>z<</symbol>>$<</equation>> that has large complexity even conditioned by any of the input strings. More precisely if <<equation>>$<<symbol>>x<</symbol>>$<</equation>> and <<equation>>$<<symbol>>y<</symbol>>$<</equation>> are strings of length <<equation>>$<<symbol>>n<</symbol>>$<</equation>> that have complexity <<equation>>$<<symbol>>s<</symbol>>(<<symbol>>n<</symbol>>)$<</equation>> and dependency <<equation>>$<<symbol>>\alpha<</symbol>>(<<symbol>>n<</symbol>>)$<</equation>>, then it is possible to effectively construct a string of length <<equation>>$<<symbol>>m<</symbol>> \approx <<symbol>>s<</symbol>>(<<symbol>>n<</symbol>>)<<symbol>>/<</symbol>>2$<</equation>> such that <<equation>>$<<symbol>>K<</symbol>>(<<symbol>>z<</symbol>> \mid <<symbol>>x<</symbol>>) \succeq <<symbol>>m<</symbol>> - <<symbol>>\alpha<</symbol>>(<<symbol>>n<</symbol>>)$<</equation>> and 
+<<equation>>$<<symbol>>K<</symbol>>(<<symbol>>z<</symbol>> \mid <<symbol>>y<</symbol>>) \succeq <<symbol>>m<</symbol>> - <<symbol>>\alpha<</symbol>>(<<symbol>>n<</symbol>>)$<</equation>>. The construction is uniform in <<equation>>$<<symbol>>x<</symbol>>,<<symbol>>y<</symbol>>, <<symbol>>s<</symbol>>(<<symbol>>n<</symbol>>), <<symbol>>\alpha<</symbol>>(<<symbol>>n<</symbol>>)$<</equation>>. This improves a result from~\cite{cal-zim:c:dlt08}, where the input consists of three strings <<equation>>$<<symbol>><<symbol>>x<</symbol>><</symbol>>_1, <<symbol>><<symbol>>x<</symbol>><</symbol>>_2, <<symbol>><<symbol>>x<</symbol>><</symbol>>_3$<</equation>> and the construction produces a string <<equation>>$<<symbol>>z<</symbol>>$<</equation>> with large <<equation>>$<<symbol>>K<</symbol>>(<<symbol>>z<</symbol>> \mid <<symbol>><<symbol>>x<</symbol>>_<<symbol>>i<</symbol>><</symbol>>)$<</equation>>, <<equation>>$<<symbol>>i<</symbol>>=1,2,3$<</equation>>.
+\end{itemize}
+Effective procedures that extract the Kolmogorov complexity of strings are related to randomness extractors. These are objects of major interest in computational complexity and there is a long and very active line of research dedicated to them. A randomness extractor is a procedure (which, ideally, runs in polynomial time) that improves the quality of a defective source of randomness. A source of randomness is modeled by a distribution <<equation>>$<<symbol>>X<</symbol>>$<</equation>> on <<equation>>$\zon$<</equation>>, for some <<equation>>$<<symbol>>n<</symbol>>$<</equation>>, and its quality is modeled by the min-entropy of <<equation>>$<<symbol>>X<</symbol>>$<</equation>> (<<equation>>$<<symbol>>X<</symbol>>$<</equation>> has min-entropy <<equation>>$<<symbol>>k<</symbol>>$<</equation>> if <<equation>>$2^{-<<symbol>><<symbol>>k<</symbol>><</symbol>>}$<</equation>> is the largest probability that <<equation>>$<<symbol>>X<</symbol>>$<</equation>> assigns to any string in <<equation>>$\zon$<</equation>>). The distribution <<equation>>$<<symbol>>X<</symbol>>$<</equation>> is defective if its min-entropy is less than <<equation>>$<<symbol>>n<</symbol>>$<</equation>>, and is perfect if its min-entropy is equal to <<equation>>$<<symbol>>n<</symbol>>$<</equation>>, which implies that <<equation>>$<<symbol>>X<</symbol>>$<</equation>> is the uniform distribution on <<equation>>$\zon$<</equation>>. In many applications, it is desirable to transform a defective distribution <<equation>>$<<symbol>>X<</symbol>>$<</equation>> into a distribution <<equation>>$<<symbol>><<symbol>>X<</symbol>><</symbol>>'$<</equation>> on a set of shorter strings which is close to the uniform distribution. Such a transformation is called a randomness extractor. Randomness extraction is not possible from a single source~\cite{san-vaz:j:quasirand}, but it is possible from two or more sources~\cite{vaz:j:sources}. Consequently, the research has focused on two types of extractors, seeded extractors and multi-source extractors. A seeded extractor extracts randomness from two independent distributions <<equation>>$<<symbol>>X<</symbol>>$<</equation>> and <<equation>>$<<symbol>>Y<</symbol>>$<</equation>>, where <<equation>>$<<symbol>>X<</symbol>>$<</equation>> is defective and defined on the set of <<equation>>$<<symbol>>n<</symbol>>$<</equation>>-bit strings  and <<equation>>$<<symbol>>Y<</symbol>>$<</equation>> is perfect and defined on the set of <<equation>>$<<symbol>>d<</symbol>>$<</equation>>-bit strings, with <<equation>>$<<symbol>>d<</symbol>>$<</equation>> much shorter than <<equation>>$<<symbol>>n<</symbol>>$<</equation>> (typically <<equation>>$<<symbol>>d<</symbol>> = <<symbol>>O<</symbol>>(\log <<symbol>>n<</symbol>>)$<</equation>>). A <<equation>>$<<symbol>>k<</symbol>>$<</equation>>-multisource extractor takes as input <<equation>>$<<symbol>>k<</symbol>>$<</equation>> defective distributions on the set of <<equation>>$<<symbol>>n<</symbol>>$<</equation>>-bit strings. For <<equation>>$<<symbol>>k<</symbol>>=2$<</equation>>, the best  multisource extractors  are (a) the extractor given by Raz~\cite{raz:c:multiextract} with one source having min-entropy <<equation>>$((1<<symbol>>/<</symbol>>2) + <<symbol>>\alpha<</symbol>>)<<symbol>>n<</symbol>>$<</equation>> (for some small <<equation>>$<<symbol>>\alpha<</symbol>>$<</equation>>) and the second source having min-entropy polylog(<<equation>>$<<symbol>>n<</symbol>>$<</equation>>), and (b) the extractor given by Bourgain~\cite{bou:j:multiextract} with both sources having min-entropy <<equation>>$((1<<symbol>>/<</symbol>>2) - <<symbol>>\alpha<</symbol>>)<<symbol>>n<</symbol>>$<</equation>> (for some small <<equation>>$<<symbol>>\alpha<</symbol>>$<</equation>>). There is a clear analogy between randomness extractors and procedures that extract Kolmogorov complexity. In particular, the reader may compare results (2) and (3) discussed above  with existing <<equation>>$2$<</equation>>-multisource extractors, but we emphasize that there is a major difference in that extractors run in polynomial time, while the procedures in (2) and (3) are only in EXPSPACE. On the other hand, results (2) and (3) suggest that it might be possible to construct multisource extractors with sources having a certain level of dependence and/or with the output being random even conditioned by one of the sources.
+
+A few words about the proof technique. At the highest level, our method follows the structure of the proofs in~\cite{zim:c:csr}. One key idea is taken from Fortnow et al.~\cite{fhpvw:c:extractKol}, who showed that a multisource extractor also extracts Kolmogorov complexity. Since multisource extractors with the parameters that are needed here are not known to exist, we construct a combinatorial object, called a balanced table, that is similar with a <<equation>>$2$<</equation>>-multisource extractor. A balanced table is a  <<equation>>$2$<</equation>>-dimensional <<equation>>$<<symbol>>N<</symbol>> \times <<symbol>>N<</symbol>>$<</equation>> table with each entry having one of <<equation>>$<<symbol>>M<</symbol>>$<</equation>> colors such that in each sufficiently large subrectangle all the colors appear approximately the same number of times (see Definition~\ref{d:balancedtable}). Using the probabilistic method, we show the existence of balanced tables with appropriate parameters. It follows that such tables can be effectively constructed using exhaustive search. Next, using arguments similiar to those in~\cite{fhpvw:c:extractKol}, we show that if <<equation>>$<<symbol>>x<</symbol>>$<</equation>> and <<equation>>$<<symbol>>y<</symbol>>$<</equation>> have sufficiently large  complexity and sufficiently small dependence, then the color of the entry in row <<equation>>$<<symbol>>x<</symbol>>$<</equation>> and column <<equation>>$<<symbol>>y<</symbol>>$<</equation>> of the table has large complexity. These ideas are sufficient to establish result~(2) (Theorem~\ref{t:result2}).  Results (1) (Theorem~\ref{t:sequences}) and (3) (Theorem~\ref{t:result3}) require non-trivial technical refinements of the basic method which are explained in the respective proofs.
+\section{Preliminaries}
+\label{s:prelim}
+\subsection{Notation}
+We work over the binary alphabet <<equation>>$\{0,1\}$<</equation>>. A string is an element of <<equation>>$\{0,1\}^*$<</equation>> and a sequence is an element of <<equation>>$\{0,1\}^<<symbol>><<symbol>>{\infty}<</symbol>><</symbol>>$<</equation>>. If <<equation>>$<<symbol>>x<</symbol>>$<</equation>> is a string, <<equation>>$<<symbol>>|<<symbol>><</symbol>>x<<symbol>><</symbol>>|<</symbol>>$<</equation>> denotes its length. If <<equation>>$<<symbol>>x<</symbol>>$<</equation>> is a string or a sequence and <<equation>>$n \in \nat$<</equation>>, <<equation>>$x \rest n$<</equation>> denotes the prefix of <<equation>>$<<symbol>>x<</symbol>>$<</equation>> of length <<equation>>$<<symbol>>n<</symbol>>$<</equation>>. The cardinality of a finite set <<equation>>$<<symbol>>A<</symbol>>$<</equation>> is denoted <<equation>>$<<symbol>>|<<symbol>><</symbol>>A<<symbol>><</symbol>>|<</symbol>>$<</equation>>. For <<equation>>$n \in \nat$<</equation>>, <<equation>>$[<<symbol>>n<</symbol>>]$<</equation>> denotes the set <<equation>>$\{1,2, \ldots, <<symbol>>n<</symbol>>\}$<</equation>>. Let <<equation>>$<<symbol>>M<</symbol>>$<</equation>> be a standard Turing machine. For any string <<equation>>$<<symbol>>x<</symbol>>$<</equation>>, define the \emph{(plain) Kolmogorov complexity} of <<equation>>$<<symbol>>x<</symbol>>$<</equation>> with respect to <<equation>>$<<symbol>>M<</symbol>>$<</equation>>, as 
+\[K_M(x) = \min \{ |p| \mid M(p) = x \}.
+\]
+ There is a universal Turing machine <<equation>>$<<symbol>>U<</symbol>>$<</equation>> such that for every machine <<equation>>$<<symbol>>M<</symbol>>$<</equation>> there is a constant <<equation>>$<<symbol>>c<</symbol>>$<</equation>> such that for all <<equation>>$<<symbol>>x<</symbol>>$<</equation>>,
+<<equation>>\begin{equation}
+\label{e:univ}
+K_U(x) \leq K_M(x) + c.
+\end{equation}<</equation>>
+We fix such a universal machine <<equation>>$<<symbol>>U<</symbol>>$<</equation>> and dropping the subscript, we let <<equation>>$<<symbol>>K<</symbol>>(<<symbol>>x<</symbol>>)$<</equation>> denote the Kolmogorov complexity of <<equation>>$<<symbol>>x<</symbol>>$<</equation>> with respect to <<equation>>$<<symbol>>U<</symbol>>$<</equation>>. For the concept of conditional Komogorov complexity, the underlying machine is a Turing machine that in addition to the read/work tape which in the initial state contains the input <<equation>>$<<symbol>>p<</symbol>>$<</equation>>, has a second tape containing initially a string <<equation>>$<<symbol>>y<</symbol>>$<</equation>>, which is called the conditioning information. Given such a machine <<equation>>$<<symbol>>M<</symbol>>$<</equation>>, we define the Kolmogorov complexity of <<equation>>$<<symbol>>x<</symbol>>$<</equation>> conditioned by <<equation>>$<<symbol>>y<</symbol>>$<</equation>> with respect to <<equation>>$<<symbol>>M<</symbol>>$<</equation>> as 
+\[K_M(x \mid y) = \min \{ |p| \mid M(p, y) = x \}.
+\]
+Similarly to the above, there exist  universal machines of this type and they satisfy the relation similar to Equation~\ref{e:univ}, but for conditional complexity. We fix such a universal machine <<equation>>$<<symbol>>U<</symbol>>$<</equation>>, and dropping the subscript <<equation>>$<<symbol>>U<</symbol>>$<</equation>>, we let <<equation>>$<<symbol>>K<</symbol>>(<<symbol>>x<</symbol>> \mid <<symbol>>y<</symbol>>)$<</equation>> denote the Kolmogorov complexity of <<equation>>$<<symbol>>x<</symbol>>$<</equation>> conditioned by <<equation>>$<<symbol>>y<</symbol>>$<</equation>> with respect to <<equation>>$<<symbol>>U<</symbol>>$<</equation>>. 
+
+
+
+Let <<equation>>$<<symbol>>\sigma <</symbol>>\in [0,1]$<</equation>>. A sequence <<equation>>$<<symbol>>x<</symbol>>$<</equation>> has randomness rate at least <<equation>>$<<symbol>>\sigma<</symbol>>$<</equation>> if <<equation>>$<<symbol>>K<</symbol>>(<<symbol>>x<</symbol>>(1:<<symbol>>n<</symbol>>)) \geq <<symbol>>\sigma <</symbol>>\cdot <<symbol>>n<</symbol>>$<</equation>>, for almost every <<equation>>$<<symbol>>n<</symbol>>$<</equation>> (\ie, the set of <<equation>>$<<symbol>>n<</symbol>>$<</equation>>'s violating the inequality is finite).
+
+The procedures that we design for extracting the Kolmogorov complexity of strings or sequences are either computable functions (in the case of strings) or Turing reductions (in the case of sequences). In our result,  the Turing reduction is also uniform in two parameters <<equation>>$<<symbol>>\tau<</symbol>>$<</equation>> and <<equation>>$<<symbol>>\sigma<</symbol>>$<</equation>>. Formally, such a Turing reduction   <<equation>>$<<symbol>>f<</symbol>>$<</equation>> is represented by a two-oracle Turing machine <<equation>>$<<symbol>><<symbol>>M<</symbol>>_<<symbol>>f<</symbol>><</symbol>>$<</equation>>. The machine <<equation>>$<<symbol>><<symbol>>M<</symbol>>_<<symbol>>f<</symbol>><</symbol>>$<</equation>> has access to two oracles <<equation>>$<<symbol>>x<</symbol>>$<</equation>> and <<equation>>$<<symbol>>y<</symbol>>$<</equation>>, which are binary sequences. When <<equation>>$<<symbol>><<symbol>>M<</symbol>>_<<symbol>>f<</symbol>><</symbol>>$<</equation>> makes the query ``<<equation>>$<<symbol>>n<</symbol>>$<</equation>>-th bit of first oracle?" (``<<equation>>$<<symbol>>n<</symbol>>$<</equation>>-th bit of second oracle?"), the machine obtains <<equation>>$<<symbol>>x<</symbol>>(<<symbol>>n<</symbol>>)$<</equation>> (respectively, <<equation>>$<<symbol>>y<</symbol>>(<<symbol>>n<</symbol>>)$<</equation>>). On input <<equation>>$(<<symbol>>\tau<</symbol>>, <<symbol>>\sigma<</symbol>>, 1^<<symbol>><<symbol>>n<</symbol>><</symbol>>)$<</equation>>, where <<equation>>$<<symbol>>\tau<</symbol>>$<</equation>> and <<equation>>$<<symbol>>\sigma<</symbol>>$<</equation>> are  rational numbers  (given in some canonical representation), <<equation>>$<<symbol>><<symbol>>M<</symbol>>_<<symbol>>f<</symbol>><</symbol>>$<</equation>> outputs one bit. We say that <<equation>>$<<symbol>>f<</symbol>>(<<symbol>>x<</symbol>>,<<symbol>>y<</symbol>>, <<symbol>>\tau<</symbol>>, <<symbol>>\sigma<</symbol>>,) = <<symbol>>z<</symbol>> \in \{0,1\}^<<symbol>><<symbol>>\infty<</symbol>><</symbol>>$<</equation>>, if for all <<equation>>$<<symbol>>n<</symbol>>$<</equation>>,  <<equation>>$<<symbol>><<symbol>>M<</symbol>>_<<symbol>>f<</symbol>><</symbol>>$<</equation>> on input <<equation>>$(<<symbol>>\tau<</symbol>>,<<symbol>>\sigma<</symbol>>, 1^<<symbol>><<symbol>>n<</symbol>><</symbol>>)$<</equation>> and working with oracles <<equation>>$<<symbol>>x<</symbol>>$<</equation>> and <<equation>>$<<symbol>>y<</symbol>>$<</equation>> halts and outputs <<equation>>$<<symbol>>z<</symbol>>(<<symbol>>n<</symbol>>)$<</equation>>.  
+In case the machine <<equation>>$<<symbol>><<symbol>>M<</symbol>>_<<symbol>>f<</symbol>><</symbol>>$<</equation>> halts on all inputs and with all oracles, we say that <<equation>>$<<symbol>>f<</symbol>>$<</equation>> is a truth-table reduction.
+\subsection{Limited Independence}
+\label{s:indep}
+
+\begin{definition} 
+\label{d:indep}
+\begin{itemize}
+\item[(a)] The dependency of two strings <<equation>>$<<symbol>>x<</symbol>>$<</equation>> and <<equation>>$<<symbol>>y<</symbol>>$<</equation>> is <<equation>>${\rm <<symbol>>d<<symbol>><</symbol>>e<<symbol>><</symbol>>p<</symbol>>}(<<symbol>>x<</symbol>>,<<symbol>>y<</symbol>>) = <<symbol>>K<</symbol>>(<<symbol>>x<</symbol>>) + <<symbol>>K<</symbol>>(<<symbol>>y<</symbol>>) - <<symbol>>K<</symbol>>(<<symbol>>x<<symbol>><</symbol>>y<</symbol>>)$<</equation>>.
+\item[(b)] Let <<equation>>$d: \nat \mapping \real$<</equation>>. We say that strings <<equation>>$<<symbol>>x<</symbol>>$<</equation>> and <<equation>>$<<symbol>>y<</symbol>>$<</equation>> have dependency at most <<equation>>$<<symbol>>d<</symbol>>(<<symbol>>n<</symbol>>)$<</equation>> if <<equation>>${\rm <<symbol>>d<<symbol>><</symbol>>e<<symbol>><</symbol>>p<</symbol>>}(<<symbol>>x<</symbol>>,<<symbol>>y<</symbol>>) \leq <<symbol>>d<</symbol>>(\max(<<symbol>>|<<symbol>><</symbol>>x<<symbol>><</symbol>>|<</symbol>>, <<symbol>>|<<symbol>><</symbol>>y<<symbol>><</symbol>>|<</symbol>>))$<</equation>>.
+\item[(c)] Let <<equation>>$d: \nat \mapping \real$<</equation>>. We say that sequences <<equation>>$<<symbol>>x<</symbol>>$<</equation>> and <<equation>>$<<symbol>>y<</symbol>>$<</equation>> have dependency at most <<equation>>$<<symbol>>d<</symbol>>(<<symbol>>n<</symbol>>)$<</equation>>, if for every natural numbers <<equation>>$<<symbol>>n<</symbol>>$<</equation>> and <<equation>>$<<symbol>>m<</symbol>>$<</equation>>, the strings <<equation>>$x \rest n$<</equation>> and <<equation>>$y \rest m$<</equation>> have dependency at most <<equation>>$<<symbol>>d<</symbol>>(<<symbol>>n<</symbol>>)$<</equation>>.
+\end{itemize}
+\end{definition}
+\if
+The definition says that, modulo additive logarithmic terms, there is no shorter way to describe the concatenation of any two initial segments of <<equation>>$<<symbol>>x<</symbol>>$<</equation>> and <<equation>>$<<symbol>>y<</symbol>>$<</equation>> than having the information that describes the initial segments.
+
+It can be shown that the fact that <<equation>>$<<symbol>>x<</symbol>>$<</equation>> and <<equation>>$<<symbol>>y<</symbol>>$<</equation>> are independent is equivalent to saying that for every natural numbers <<equation>>$<<symbol>>n<</symbol>>$<</equation>> and <<equation>>$<<symbol>>m<</symbol>>$<</equation>>,
+<<equation>>\begin{equation}
+<<symbol>>K<</symbol>>(<<symbol>>x<</symbol>>(1:<<symbol>>n<</symbol>>) \mid <<symbol>>y<</symbol>>(1:<<symbol>>m<</symbol>>)) \geq <<symbol>>K<</symbol>>(<<symbol>>x<</symbol>>(1:<<symbol>>n<</symbol>>)) - <<symbol>>O<</symbol>>(\log(<<symbol>>n<</symbol>>) + \log(<<symbol>>m<</symbol>>))<<symbol>>.<</symbol>>
+\end{equation}<</equation>>
+and
+<<equation>>\begin{equation}
+<<symbol>>K<</symbol>>(<<symbol>>y<</symbol>>(1:<<symbol>>m<</symbol>>) \mid <<symbol>>x<</symbol>>(1:<<symbol>>n<</symbol>>)) \geq <<symbol>>K<</symbol>>(<<symbol>>y<</symbol>>(1:<<symbol>>m<</symbol>>)) - <<symbol>>O<</symbol>>(\log(<<symbol>>n<</symbol>>) + \log(<<symbol>>m<</symbol>>))<<symbol>>.<</symbol>>
+\end{equation}<</equation>>
+Thus, if two sequences <<equation>>$<<symbol>>x<</symbol>>$<</equation>> and <<equation>>$<<symbol>>y<</symbol>>$<</equation>> are independent, no initial segment of one of the sequence can help in getting a shorter description of any initial segment of the other sequence, modulo additive logarithmical terms.
+ \fi
+\subsection{Balanced Tables}
+\label{s:balanced}
+Let <<equation>>$<<symbol>>N<</symbol>>$<</equation>> and <<equation>>$<<symbol>>M<</symbol>>$<</equation>> be positive integers. An <<equation>>$(<<symbol>>N<</symbol>>, <<symbol>>M<</symbol>>)$<</equation>> table is a function <<equation>>$T:[N] \times [N] \mapping [M]$<</equation>>. It is convenient to view it as a two dimensional table with <<equation>>$<<symbol>>N<</symbol>>$<</equation>> rows and <<equation>>$<<symbol>>N<</symbol>>$<</equation>> columns where each entry has a color from the set <<equation>>$[<<symbol>>M<</symbol>>]$<</equation>>. If <<equation>>$<<symbol>><<symbol>>B<</symbol>><</symbol>>_1, <<symbol>><<symbol>>B<</symbol>><</symbol>>_2$<</equation>> are subsets of <<equation>>$[<<symbol>>N<</symbol>>]$<</equation>>, the <<equation>>$<<symbol>><<symbol>>B<</symbol>><</symbol>>_1 \times <<symbol>><<symbol>>B<</symbol>><</symbol>>_2$<</equation>> rectangle of table <<equation>>$<<symbol>>T<</symbol>>$<</equation>> is the part of <<equation>>$<<symbol>>T<</symbol>>$<</equation>> comprised of the rows in <<equation>>$<<symbol>><<symbol>>B<</symbol>><</symbol>>_1$<</equation>> and the columns in <<equation>>$<<symbol>><<symbol>>B<</symbol>><</symbol>>_2$<</equation>>.
+\begin{definition}
+\label{d:balancedtable}
+Let <<equation>>$T: [N] \times [N] \mapping [M]$<</equation>> be an <<equation>>$(<<symbol>>N<</symbol>>,<<symbol>>M<</symbol>>)$<</equation>> table and <<equation>>$<<symbol>>S<</symbol>> \leq <<symbol>>N<</symbol>>$<</equation>> and <<equation>>$<<symbol>>D<</symbol>> \leq <<symbol>>M<</symbol>>$<</equation>> be two positive integers. We say that the table is <<equation>>$(<<symbol>>S<</symbol>>, <<symbol>>D<</symbol>>)$<</equation>>-balanced if for every set <<equation>>$<<symbol>>A<</symbol>> \subseteq [<<symbol>>M<</symbol>>]$<</equation>> with <<equation>>$<<symbol>>|<<symbol>><</symbol>>A<<symbol>><</symbol>>|<</symbol>> = <<symbol>>M<<symbol>><</symbol>>/<<symbol>><</symbol>>D<</symbol>>$<</equation>> and for every sets <<equation>>$<<symbol>><<symbol>>B<</symbol>><</symbol>>_1 \subseteq [<<symbol>>N<</symbol>>], <<symbol>><<symbol>>B<</symbol>><</symbol>>_2 \subseteq [<<symbol>>N<</symbol>>]$<</equation>> with <<equation>>$<<symbol>>|<<symbol>><<symbol>><</symbol>>B<</symbol>><</symbol>>_1<<symbol>>|<</symbol>> \geq <<symbol>>S<</symbol>>, <<symbol>>|<<symbol>><<symbol>><</symbol>>B<</symbol>><</symbol>>_2<<symbol>>|<</symbol>> \geq <<symbol>>S<</symbol>>$<</equation>>,
+\[
+| T^{-1}(A) \cap (B_1 \times B_2) | \leq 2 \cdot \frac{|A|}{M} \cdot |B_1 \times B_2|.
+\]
+\end{definition}
+The above definition states that in any <<equation>>$<<symbol>><<symbol>>B<</symbol>><</symbol>>_1 \times <<symbol>><<symbol>>B<</symbol>><</symbol>>_2$<</equation>> rectangle of <<equation>>$<<symbol>>T<</symbol>>$<</equation>> and for any set <<equation>>$<<symbol>>A<</symbol>>$<</equation>> of colors of size <<equation>>$<<symbol>>M<<symbol>><</symbol>>/<<symbol>><</symbol>>D<</symbol>>$<</equation>>, the fraction of occurences of colors in <<equation>>$<<symbol>>A<</symbol>>$<</equation>> is bounded by <<equation>>$2 \cdot <<symbol>>|<<symbol>><</symbol>>A<<symbol>><</symbol>>|<<symbol>><</symbol>>/<<symbol>><</symbol>>M<</symbol>>$<</equation>>.
+\begin{lemma}
+\label{l-balancedtable}
+Suppose <<equation>>$<<symbol>><<symbol>>S<</symbol>><</symbol>>^2 > 3<<symbol>>M<</symbol>> + 3<<symbol>>M<</symbol>> \ln <<symbol>>D<</symbol>> +6<<symbol>>S<<symbol>><</symbol>>D<</symbol>> + 6<<symbol>>S<<symbol>><</symbol>>D<</symbol>> \ln(<<symbol>>N<<symbol>><</symbol>>/<<symbol>><</symbol>>S<</symbol>>)$<</equation>>. Then there exists a table <<equation>>$T : [N] \times [N] \mapping [M]$<</equation>> that is <<equation>>$(<<symbol>>S<</symbol>>,<<symbol>>D<</symbol>>)$<</equation>>-balanced.
+\end{lemma}
+\proof
+The proof is by the probabilistic method. We color the <<equation>>$<<symbol>>N<</symbol>>$<</equation>>-by-<<equation>>$<<symbol>>N<</symbol>>$<</equation>> table selecting for each entry independently at random a color from <<equation>>$[<<symbol>>M<</symbol>>]$<</equation>>. Let us fix <<equation>>$<<symbol>>A<</symbol>> \subseteq [<<symbol>>M<</symbol>>]$<</equation>> with <<equation>>$<<symbol>>|<<symbol>><</symbol>>A<<symbol>><</symbol>>|<</symbol>> = <<symbol>>M<<symbol>><</symbol>>/<<symbol>><</symbol>>D<</symbol>>$<</equation>>, <<equation>>$<<symbol>><<symbol>>B<</symbol>><</symbol>>_1 \subseteq [<<symbol>>N<</symbol>>]$<</equation>> with <<equation>>$<<symbol>>|<<symbol>><<symbol>><</symbol>>B<</symbol>><</symbol>>_1<<symbol>>|<</symbol>> = <<symbol>>S<</symbol>>$<</equation>> and <<equation>>$<<symbol>><<symbol>>B<</symbol>><</symbol>>_2 \subseteq [<<symbol>>N<</symbol>>]$<</equation>> with <<equation>>$<<symbol>>|<<symbol>><<symbol>><</symbol>>B<</symbol>><</symbol>>_2<<symbol>>|<</symbol>> = <<symbol>>S<</symbol>>$<</equation>>. Note that it is enough to prove the assertion for sets <<equation>>$<<symbol>><<symbol>>B<</symbol>><</symbol>>_1$<</equation>> and <<equation>>$<<symbol>><<symbol>>B<</symbol>><</symbol>>_2$<</equation>> of size exactly <<equation>>$<<symbol>>S<</symbol>>$<</equation>>.
+By the Chernoff bounds,
+<<equation>>\begin{equation}
+\label{e:1}
+{\rm Prob}\bigg( \frac{\mbox{number of $A$-colored cells in $B_1 \times B_2$}}{S^2} > 2 \frac{|A|}{M}\bigg) \leq e^{-(1/3) (|A|/M) S^2} = e^{-(1/(3D))S^2}.
+\end{equation}<</equation>>
+The number of possibilities of choosing the set <<equation>>$<<symbol>>A<</symbol>>$<</equation>> as above is bounded by
+<<equation>>\begin{equation}
+\label{e:2}
+{M \choose M/D} \leq (e\cdot D)^{M/D} = e^{M/D + (M/D) \ln D}.
+\end{equation}<</equation>>
+The number of possibilities of choosing the sets <<equation>>$<<symbol>><<symbol>>B<</symbol>><</symbol>>_1$<</equation>> and <<equation>>$<<symbol>><<symbol>>B<</symbol>><</symbol>>_2$<</equation>> as above is bounded by
+<<equation>>\begin{equation}
+\label{e:3}
+{N \choose S}^2 \leq (e N/S)^{2S} = e^{2S + 2S \cdot \ln(N/S)}.
+\end{equation}<</equation>>
+The hypothesis ensures that the product of the upper bounds in Equations~(\ref{e:1}), ~(\ref{e:2}), and~(\ref{e:3}) is less than <<equation>>$1$<</equation>>. It follows from the union bound that there exists an <<equation>>$(<<symbol>>S<</symbol>>,<<symbol>>D<</symbol>>)$<</equation>>-balanced table.
+\qed
+\medskip
+
+In our applications, <<equation>>$<<symbol>>N<</symbol>>$<</equation>> and <<equation>>$<<symbol>>M<</symbol>>$<</equation>> will be powers of two, <<equation>>$<<symbol>>N<</symbol>>=2^<<symbol>><<symbol>>n<</symbol>><</symbol>>$<</equation>> , <<equation>>$<<symbol>>M<</symbol>> = 2^<<symbol>><<symbol>>m<</symbol>><</symbol>>$<</equation>>, and <<equation>>$[<<symbol>>N<</symbol>>]$<</equation>> is identified with <<equation>>$\zo^n$<</equation>> and <<equation>>$[<<symbol>>M<</symbol>>]$<</equation>> is identified with <<equation>>$\zo^m$<</equation>>. We assume this setting in the following.
+\begin{lemma} 
+\label{l-bal-table-refined}
+Let <<equation>>$T:  [N] \times [N] \mapping [M]$<</equation>> be an <<equation>>$(<<symbol>>S<</symbol>>,<<symbol>>M<</symbol>>)$<</equation>>-balanced table. Let <<equation>>$<<symbol>>v<</symbol>>$<</equation>> be a string with <<equation>>$<<symbol>>|<<symbol>><</symbol>>v<<symbol>><</symbol>>|<</symbol>> \leq <<symbol>>m<</symbol>>$<</equation>>. Then for all sets <<equation>>$<<symbol>><<symbol>>B<</symbol>><</symbol>>_1 \subseteq [<<symbol>>N<</symbol>>],  <<symbol>><<symbol>>B<</symbol>><</symbol>>_2 \subseteq [<<symbol>>N<</symbol>>]$<</equation>> with <<equation>>$<<symbol>>|<<symbol>><<symbol>><</symbol>>B<</symbol>><</symbol>>_1<<symbol>>|<</symbol>> \geq <<symbol>>S<</symbol>>, <<symbol>>|<<symbol>><<symbol>><</symbol>>B<</symbol>><</symbol>>_2<<symbol>>|<</symbol>> \geq <<symbol>>S<</symbol>>$<</equation>>, the number of entries in the <<equation>>$<<symbol>><<symbol>>B<</symbol>><</symbol>>_1 \times <<symbol>><<symbol>>B<</symbol>><</symbol>>_2$<</equation>> rectangle of <<equation>>$<<symbol>>T<</symbol>>$<</equation>> that have a color whose prefix is <<equation>>$<<symbol>>v<</symbol>>$<</equation>> is  <<equation>>$\leq 2 \cdot \frac{1}{2^{<<symbol>><<symbol>>|<<symbol>><</symbol>>v<<symbol>><</symbol>>|<</symbol>><</symbol>>}} \cdot <<symbol>>|<<symbol>><<symbol>><</symbol>>B<</symbol>><</symbol>>_1 \times <<symbol>><<symbol>>B<</symbol>><</symbol>>_2<<symbol>>|<</symbol>>$<</equation>>.
+\end{lemma}
+\proof
+First observe that, since the table is <<equation>>$(<<symbol>>S<</symbol>>,<<symbol>>D<</symbol>>)$<</equation>>-balanced with the value of the parameter <<equation>>$<<symbol>>D<</symbol>>$<</equation>> equal to <<equation>>$<<symbol>>M<</symbol>>$<</equation>>, the definition of an <<equation>>$(<<symbol>>S<</symbol>>,<<symbol>>D<</symbol>>)$<</equation>>-balanced table implies that no color <<equation>>$<<symbol>>a<</symbol>> \in [<<symbol>>M<</symbol>>]$<</equation>> occurs more than a fraction of <<equation>>$2<<symbol>>/<<symbol>><</symbol>>M<</symbol>>$<</equation>> times in any rectangle of <<equation>>$<<symbol>>T<</symbol>>$<</equation>> with sizes <<equation>>$\geq <<symbol>>S<</symbol>>$<</equation>>. Let <<equation>>$<<symbol>>v<</symbol>>$<</equation>> be a string of length of most <<equation>>$<<symbol>>m<</symbol>>$<</equation>>. Then <<equation>>$<<symbol>>v<</symbol>>$<</equation>> has <<equation>>$2^{<<symbol>><<symbol>>m<</symbol>>-<<symbol>>|<<symbol>><</symbol>>v<<symbol>><</symbol>>|<</symbol>><</symbol>>}$<</equation>> extensions of length <<equation>>$<<symbol>>m<</symbol>>$<</equation>> and, as we have just noted, each such extension occurs at most a fraction <<equation>>$2<<symbol>>/<<symbol>><</symbol>>M<</symbol>>$<</equation>> in any rectangle with sizes <<equation>>$\geq <<symbol>>S<</symbol>>$<</equation>>. It follows that in any <<equation>>$<<symbol>><<symbol>>B<</symbol>><</symbol>>_1 \times <<symbol>><<symbol>>B<</symbol>><</symbol>>_2$<</equation>> rectangle of <<equation>>$<<symbol>>T<</symbol>>$<</equation>>, all the extensions of <<equation>>$<<symbol>>v<</symbol>>$<</equation>> taken together occur at most <<equation>>$2^{<<symbol>><<symbol>>m<</symbol>>-<<symbol>>|<<symbol>><</symbol>>v<<symbol>><</symbol>>|<</symbol>><</symbol>>} \cdot (2<<symbol>>/<<symbol>><</symbol>>M<</symbol>>) \cdot <<symbol>>|<<symbol>><<symbol>><</symbol>>B<</symbol>><</symbol>>_1 \times <<symbol>><<symbol>>B<</symbol>><</symbol>>_2<<symbol>>|<</symbol>> = (2<<symbol>>/<</symbol>>2^{<<symbol>><<symbol>>|<<symbol>><</symbol>>v<<symbol>><</symbol>>|<</symbol>><</symbol>>}) \cdot <<symbol>>|<<symbol>><<symbol>><</symbol>>B<</symbol>><</symbol>>_1 \times <<symbol>><<symbol>>B<</symbol>><</symbol>>_2<<symbol>>|<</symbol>>$<</equation>> times.
+\qed
+\section{Increasing the randomness rate of strings}
+The next theorem shows that from two <<equation>>$<<symbol>>n<</symbol>>$<</equation>>-bit strings with complexity <<equation>>$<<symbol>>\sigma <<symbol>><</symbol>>n<</symbol>>$<</equation>> and dependency <<equation>>$<<symbol>>\alpha <<symbol>><</symbol>>n<</symbol>>$<</equation>>, one can construct a string of length <<equation>>$\approx 2<<symbol>>\sigma <<symbol>><</symbol>>n<</symbol>>$<</equation>> and complexity <<equation>>$\approx ( 2<<symbol>>\sigma <</symbol>>- <<symbol>>\alpha<</symbol>>)<<symbol>>n<</symbol>>$<</equation>>.
+\begin{theorem}
+\label{t:result2}
+For every <<equation>>$<<symbol>>\sigma <</symbol>>> 0$<</equation>>, for every <<equation>>$0 < <<symbol>>\alpha <</symbol>>< <<symbol>>\sigma<</symbol>>$<</equation>>, there is a computable function
+<<equation>>$f:\zo^* \times \zo^* \mapping \zo^*$<</equation>>, that, for every <<equation>>$<<symbol>>n<</symbol>>$<</equation>>,  maps any pair of strings of length <<equation>>$<<symbol>>n<</symbol>>$<</equation>> into a string of length <<equation>>$<<symbol>>m<</symbol>> = 2<<symbol>>\sigma <<symbol>><</symbol>>n<</symbol>> - \log <<symbol>>n<</symbol>>$<</equation>>  and has the following property: for every sufficiently large <<equation>>$<<symbol>>n<</symbol>>$<</equation>>,
+if <<equation>>$(<<symbol>>x<</symbol>>,<<symbol>>y<</symbol>>)$<</equation>> is a pair of strings with
+\begin{enumerate}
+	\item <<equation>>$<<symbol>>|<<symbol>><</symbol>>x<<symbol>><</symbol>>|<</symbol>> = <<symbol>>|<<symbol>><</symbol>>y<<symbol>><</symbol>>|<</symbol>> = <<symbol>>n<</symbol>>$<</equation>>,
+	\item <<equation>>$<<symbol>>K<</symbol>>(<<symbol>>x<</symbol>>) \geq <<symbol>>\sigma <<symbol>><</symbol>>n<</symbol>>$<</equation>>, <<equation>>$<<symbol>>K<</symbol>>(<<symbol>>y<</symbol>>) \geq <<symbol>>\sigma <<symbol>><</symbol>>n<</symbol>>$<</equation>>
+	\item <<equation>>$(<<symbol>>x<</symbol>>,<<symbol>>y<</symbol>>)$<</equation>> have dependency at most <<equation>>$<<symbol>>\alpha <<symbol>><</symbol>>n<</symbol>>$<</equation>>,
+\end{enumerate}
+then
+\[
+K(f(x,y)) \geq (2\sigma - \alpha) n - 9 \log n.
+\]
+\end{theorem}
+\proof
+Let us fix <<equation>>$<<symbol>>n<</symbol>>$<</equation>> and let <<equation>>$<<symbol>>N<</symbol>> = 2^<<symbol>><<symbol>>n<</symbol>><</symbol>>, <<symbol>>m<</symbol>> = 2<<symbol>>\sigma <<symbol>><</symbol>>n<</symbol>> - \log <<symbol>>n<</symbol>>, <<symbol>>M<</symbol>> = 2^<<symbol>><<symbol>>m<</symbol>><</symbol>>, <<symbol>>S<</symbol>>= 2^{<<symbol>><<symbol>>\sigma <<symbol>><</symbol>>n<</symbol>><</symbol>>}, <<symbol>>d<</symbol>> = <<symbol>>\alpha <<symbol>><</symbol>>n<</symbol>> + 8 \log <<symbol>>n<</symbol>>$<</equation>>, and <<equation>>$<<symbol>>D<</symbol>> = 2^<<symbol>><<symbol>>d<</symbol>><</symbol>>$<</equation>>. Note that the requirements of Lemma~\ref{l-balancedtable} are satisfied and therefore there exists a table <<equation>>$T: [N] \times [N] \mapping [M]$<</equation>> that is <<equation>>$(<<symbol>>S<</symbol>>,<<symbol>>D<</symbol>>)$<</equation>>-balanced. By brute force, we find the smallest (in some canonical sense) such table <<equation>>$<<symbol>>T<</symbol>>$<</equation>>. Note that the table <<equation>>$<<symbol>>T<</symbol>>$<</equation>> can be described with <<equation>>$\log <<symbol>>n<</symbol>> + <<symbol>>O<</symbol>>(1)$<</equation>> bits. We define <<equation>>$<<symbol>>f<</symbol>>(<<symbol>>x<</symbol>>,<<symbol>>y<</symbol>>)$<</equation>> to be <<equation>>$<<symbol>>T<</symbol>>(<<symbol>>x<</symbol>>,<<symbol>>y<</symbol>>)$<</equation>>. Thus, let <<equation>>$<<symbol>>z<</symbol>> = <<symbol>>T<</symbol>>(<<symbol>>x<</symbol>>,<<symbol>>y<</symbol>>)$<</equation>> for some strings <<equation>>$<<symbol>>x<</symbol>>$<</equation>> and <<equation>>$<<symbol>>y<</symbol>>$<</equation>> of length <<equation>>$<<symbol>>n<</symbol>>$<</equation>> satisfying the requirements in the theorem hypothesis.  For the sake of obtaining a contradiction, suppose that <<equation>>$<<symbol>>K<</symbol>>(<<symbol>>z<</symbol>>) <  (2<<symbol>>\sigma <</symbol>>- <<symbol>>\alpha<</symbol>>) <<symbol>>n<</symbol>> - 9 \log <<symbol>>n<</symbol>> = <<symbol>>m<</symbol>>-<<symbol>>d<</symbol>>$<</equation>>.
+Let <<equation>>$<<symbol>><<symbol>>t<</symbol>><</symbol>>_1 = <<symbol>>K<</symbol>>(<<symbol>>x<</symbol>>), <<symbol>><<symbol>>t<</symbol>><</symbol>>_2 = <<symbol>>K<</symbol>>(<<symbol>>y<</symbol>>)$<</equation>>. From the properties of <<equation>>$<<symbol>>x<</symbol>>$<</equation>> and <<equation>>$<<symbol>>y<</symbol>>$<</equation>>, <<equation>>$<<symbol>><<symbol>>t<</symbol>><</symbol>>_1 \geq <<symbol>>\sigma <<symbol>><</symbol>>n<</symbol>>$<</equation>> and <<equation>>$<<symbol>><<symbol>>t<</symbol>><</symbol>>_2 \geq <<symbol>>\sigma <<symbol>><</symbol>>n<</symbol>>$<</equation>>. Let <<equation>>$B_1 = \{u \in \zo^n \mid K(u) \leq t_1 \}$<</equation>>, <<equation>>$B_2 = \{v \in \zo^n  \mid K(v) \leq t_2\}$<</equation>> and
+<<equation>>$A = \{w \in \zo^m \mid K(w) < m-d\}$<</equation>>. We have <<equation>>$<<symbol>>|<<symbol>><<symbol>><</symbol>>B<</symbol>><</symbol>>_1<<symbol>>|<</symbol>> \leq 2^{<<symbol>><<symbol>><<symbol>>t<</symbol>><</symbol>><</symbol>>_1 + 1}$<</equation>>, <<equation>>$<<symbol>>|<<symbol>><<symbol>><</symbol>>B<</symbol>><</symbol>>_2<<symbol>>|<</symbol>> \leq 2^{<<symbol>><<symbol>><<symbol>>t<</symbol>><</symbol>><</symbol>>_2 + 1}$<</equation>> and <<equation>>$<<symbol>>|<<symbol>><</symbol>>A<<symbol>><</symbol>>|<</symbol>> < 2^{<<symbol>><<symbol>>m<</symbol>>-<<symbol>>d<</symbol>><</symbol>>}$<</equation>>. We take <<equation>>$<<symbol>><<symbol>>B<</symbol>><</symbol>>_1'$<</equation>> and <<equation>>$<<symbol>><<symbol>>B<</symbol>><</symbol>>_2'$<</equation>> with <<equation>>$<<symbol>>|<<symbol>><<symbol>><</symbol>>B<</symbol>><</symbol>>_1'<<symbol>>|<</symbol>> = 2^{<<symbol>><<symbol>><<symbol>>t<</symbol>><</symbol>><</symbol>>_1 + 1}, <<symbol>>|<<symbol>><<symbol>><</symbol>>B<</symbol>><</symbol>>_2'<<symbol>>|<</symbol>> = 2^{<<symbol>><<symbol>><<symbol>>t<</symbol>><</symbol>><</symbol>>_2 + 1}$<</equation>>, <<equation>>$<<symbol>><<symbol>>B<</symbol>><</symbol>>_1 \subseteq <<symbol>><<symbol>>B<</symbol>><</symbol>>_1'$<</equation>> and <<equation>>$<<symbol>><<symbol>>B<</symbol>><</symbol>>_2 \subseteq <<symbol>><<symbol>>B<</symbol>><</symbol>>_2'$<</equation>>. Since the table <<equation>>$<<symbol>>T<</symbol>>$<</equation>> is <<equation>>$(<<symbol>>S<</symbol>>,<<symbol>>D<</symbol>>)$<</equation>>-balanced,
+\[
+\begin{array}{ll}
+|T^{-1}(A) \cap (B_1 \times B_2)| \leq |T^{-1}(A) \cap (B_1' \times B_2')| & \leq 2 \cdot \frac{|A|}{M} \cdot |B_1' \times B_2'| \\
+& \leq 2 \cdot 2^{m-d} \frac{1}{2^m} \cdot 2^{t_1 + 1} \cdot 2^{t_2 + 1} \\
+& \leq 2^{t_1 + t_2 - d + 3}. 
+\end{array}
+\]
+Note that <<equation>>$(<<symbol>>x<</symbol>>,<<symbol>>y<</symbol>>) \in <<symbol>><<symbol>>T<</symbol>><</symbol>>^{-1}(<<symbol>>A<</symbol>>) \cap (<<symbol>><<symbol>>B<</symbol>><</symbol>>_1 \times <<symbol>><<symbol>>B<</symbol>><</symbol>>_2)$<</equation>> and that <<equation>>$<<symbol>><<symbol>>T<</symbol>><</symbol>>^{-1}(<<symbol>>A<</symbol>>) \cap (<<symbol>><<symbol>>B<</symbol>><</symbol>>_1 \times <<symbol>><<symbol>>B<</symbol>><</symbol>>_2)$<</equation>> can be enumerated if we are given <<equation>>$<<symbol>><<symbol>>t<</symbol>><</symbol>>_1, <<symbol>><<symbol>>t<</symbol>><</symbol>>_2$<</equation>> and <<equation>>$<<symbol>>n<</symbol>>$<</equation>> (from which <<equation>>$(<<symbol>>m<</symbol>>-<<symbol>>d<</symbol>>)$<</equation>> and a description of table <<equation>>$<<symbol>>T<</symbol>>$<</equation>> can be determined). Therefore <<equation>>$<<symbol>>x<<symbol>><</symbol>>y<</symbol>>$<</equation>> can be described by the rank of <<equation>>$(<<symbol>>x<</symbol>>,<<symbol>>y<</symbol>>)$<</equation>> in the above enumeration and by information needed for performing that enumeration. Thus
+\[
+\begin{array}{ll}
+K(xy) & \leq t_1 + t_2 - d + 2 (\log t_1 + \log t_2 + \log n ) + O(1) \\
+& \leq t_1 + t_2 - d + 7 \log n.
+\end{array}
+\]
+For the second inequality, we took into consideration that <<equation>>$<<symbol>><<symbol>>t<</symbol>><</symbol>>_1 \leq <<symbol>>n<</symbol>>$<</equation>> and <<equation>>$<<symbol>><<symbol>>t<</symbol>><</symbol>>_2 \leq <<symbol>>n<</symbol>>$<</equation>>. On the other hand, since <<equation>>$<<symbol>>x<</symbol>>$<</equation>> and <<equation>>$<<symbol>>y<</symbol>>$<</equation>> have dependency bounded by <<equation>>$<<symbol>>\alpha <<symbol>><</symbol>>n<</symbol>>$<</equation>>.
+\[
+K(xy) \geq t_1 + t_2 - \alpha n.
+\]
+Keeping in mind that <<equation>>$<<symbol>>d<</symbol>> = <<symbol>>\alpha <<symbol>><</symbol>>n<</symbol>> + 8 \log <<symbol>>n<</symbol>>$<</equation>>, we have obtained a contradiction.
+\qed
+
+
+The next theorem shows from two <<equation>>$<<symbol>>n<</symbol>>$<</equation>>-bit strings with complexity <<equation>>$<<symbol>>s<</symbol>>(<<symbol>>n<</symbol>>)$<</equation>> and dependency <<equation>>$<<symbol>>\alpha<</symbol>>(<<symbol>>n<</symbol>>)$<</equation>>, one can construct a string of length <<equation>>$<<symbol>>m<</symbol>> \approx <<symbol>>s<</symbol>>(<<symbol>>n<</symbol>>)<<symbol>>/<</symbol>>2$<</equation>> with complexity conditioned by any one of the input strings <<equation>>$\approx <<symbol>>m<</symbol>> -<<symbol>>\alpha<</symbol>>(<<symbol>>n<</symbol>>)$<</equation>>.
+\begin{theorem}
+\label{t:result3}
+For every computable function <<equation>>$<<symbol>>s<</symbol>>(<<symbol>>n<</symbol>>)$<</equation>> verifying <<equation>>$6 \log <<symbol>>n<</symbol>> < <<symbol>>s<</symbol>>(<<symbol>>n<</symbol>>) \leq <<symbol>>n<</symbol>>$<</equation>> and every function <<equation>>$<<symbol>>\alpha<</symbol>>(<<symbol>>n<</symbol>>)$<</equation>>, there is a computable function <<equation>>$f: \zo^* \times \zo^* \mapping \zo^*$<</equation>> that, for every <<equation>>$<<symbol>>n<</symbol>>$<</equation>>, maps any pair of strings of length <<equation>>$<<symbol>>n<</symbol>>$<</equation>> into a string of length <<equation>>$<<symbol>>m<</symbol>> = <<symbol>>s<</symbol>>(<<symbol>>n<</symbol>>)<<symbol>>/<</symbol>>2 - 7 \log <<symbol>>n<</symbol>>$<</equation>> and has the following property: for every sufficiently large <<equation>>$<<symbol>>n<</symbol>>$<</equation>>, if <<equation>>$(<<symbol>>x<</symbol>>,<<symbol>>y<</symbol>>)$<</equation>> is a pair of strings with
+\begin{enumerate}
+	\item <<equation>>$<<symbol>>|<<symbol>><</symbol>>x<<symbol>><</symbol>>|<</symbol>> = <<symbol>>|<<symbol>><</symbol>>y<<symbol>><</symbol>>|<</symbol>> = <<symbol>>n<</symbol>>$<</equation>>,
+	\item <<equation>>$<<symbol>>K<</symbol>>(<<symbol>>x<</symbol>>) \geq <<symbol>>s<</symbol>>(<<symbol>>n<</symbol>>), <<symbol>>K<</symbol>>(<<symbol>>y<</symbol>>) \geq <<symbol>>s<</symbol>>(<<symbol>>n<</symbol>>)$<</equation>>,
+	\item <<equation>>$(<<symbol>>x<</symbol>>,<<symbol>>y<</symbol>>)$<</equation>> has dependency at most <<equation>>$<<symbol>>\alpha<</symbol>>(<<symbol>>n<</symbol>>)$<</equation>>
+\end{enumerate}
+then
+\[
+\begin{array}{ll}
+K(f(x,y) \mid x) & \geq m - \alpha(n) - 11 \log n, \\
+K(f(x,y) \mid y) & \geq m - \alpha(n) - 11 \log n. 
+\end{array}
+\]
+\end{theorem}
+\proof
+We fix <<equation>>$<<symbol>>n<</symbol>>$<</equation>> and let <<equation>>$<<symbol>>N<</symbol>>=2^<<symbol>><<symbol>>n<</symbol>><</symbol>>, <<symbol>>m<</symbol>> = <<symbol>>s<</symbol>>(<<symbol>>n<</symbol>>)<<symbol>>/<</symbol>>2 - 7 \log <<symbol>>n<</symbol>>, <<symbol>>M<</symbol>>= 2^<<symbol>><<symbol>>m<</symbol>><</symbol>>, <<symbol>>S<</symbol>>= 2^{<<symbol>><<symbol>>s<</symbol>>(<<symbol>>n<</symbol>>)<<symbol>>/<</symbol>><</symbol>>2}, <<symbol>>D<</symbol>>=<<symbol>>M<</symbol>>, <<symbol>>t<</symbol>>= <<symbol>>\alpha<</symbol>>(<<symbol>>n<</symbol>>) + 11 \log <<symbol>>n<</symbol>>$<</equation>>. The requirements of Lemma~\ref{l-balancedtable} are satisfied and therefore there exists a table <<equation>>$T: [N] \times [N] \mapping [M]$<</equation>> that is <<equation>>$(<<symbol>>S<</symbol>>,<<symbol>>D<</symbol>>)$<</equation>>-balanced. By brute force, we find the smallest (in some canonical sense) such table <<equation>>$<<symbol>>T<</symbol>>$<</equation>>. The table <<equation>>$<<symbol>>T<</symbol>>$<</equation>> is determined by <<equation>>$<<symbol>>n<</symbol>>$<</equation>> and <<equation>>$<<symbol>>s<</symbol>>(<<symbol>>n<</symbol>>)$<</equation>>, and, thus, can be described with <<equation>>$\log <<symbol>>n<</symbol>> + \log <<symbol>>s<</symbol>>(<<symbol>>n<</symbol>>) + <<symbol>>O<</symbol>>(1)$<</equation>> bits. Note that, since <<equation>>$<<symbol>>D<</symbol>>=<<symbol>>M<</symbol>>$<</equation>>, it holds that for every color <<equation>>$<<symbol>>a<</symbol>> \in [<<symbol>>M<</symbol>>]$<</equation>> and for every subsets <<equation>>$<<symbol>><<symbol>>B<</symbol>><</symbol>>_1 \subseteq [<<symbol>>N<</symbol>>], <<symbol>><<symbol>>B<</symbol>><</symbol>>_2 \subseteq [<<symbol>>N<</symbol>>]$<</equation>> with
+<<equation>>$<<symbol>>|<<symbol>><<symbol>><</symbol>>B<</symbol>><</symbol>>_1<<symbol>>|<</symbol>> \geq <<symbol>>S<</symbol>>, <<symbol>>|<<symbol>><<symbol>><</symbol>>B<</symbol>><</symbol>>_2<<symbol>>|<</symbol>> \geq <<symbol>>S<</symbol>>$<</equation>>, the number of occurrences of <<equation>>$<<symbol>>a<</symbol>>$<</equation>> in the <<equation>>$<<symbol>><<symbol>>B<</symbol>><</symbol>>_1 \times <<symbol>><<symbol>>B<</symbol>><</symbol>>_2$<</equation>> subrectangle of <<equation>>$<<symbol>>T<</symbol>>$<</equation>> is bounded by <<equation>>$(2<<symbol>>/<<symbol>><</symbol>>M<</symbol>>) \cdot <<symbol>>|<<symbol>><<symbol>><</symbol>>B<</symbol>><</symbol>>_1 \times <<symbol>><<symbol>>B<</symbol>><</symbol>>_2<<symbol>>|<</symbol>>$<</equation>>.
+
+We define <<equation>>$<<symbol>>f<</symbol>>(<<symbol>>x<</symbol>>,<<symbol>>y<</symbol>>)$<</equation>> to be <<equation>>$<<symbol>>T<</symbol>>(<<symbol>>x<</symbol>>,<<symbol>>y<</symbol>>)$<</equation>>. Thus, let <<equation>>$<<symbol>>z<</symbol>> = <<symbol>>T<</symbol>>(<<symbol>>x<</symbol>>,<<symbol>>y<</symbol>>)$<</equation>> for some strings <<equation>>$<<symbol>>x<</symbol>>$<</equation>> and <<equation>>$<<symbol>>y<</symbol>>$<</equation>> of length <<equation>>$<<symbol>>n<</symbol>>$<</equation>> satisfying the requirements in the theorem hypothesis. We need to show that <<equation>>$<<symbol>>K<</symbol>>(<<symbol>>z<</symbol>> \mid <<symbol>>x<</symbol>>)$<</equation>> and <<equation>>$<<symbol>>K<</symbol>>(<<symbol>>z<</symbol>> \mid <<symbol>>y<</symbol>>)$<</equation>> are at least <<equation>>$<<symbol>>m<</symbol>> - <<symbol>>\alpha<</symbol>>(<<symbol>>n<</symbol>>) - 11 \log <<symbol>>n<</symbol>>$<</equation>>. We show this relation for <<equation>>$<<symbol>>K<</symbol>>(<<symbol>>z<</symbol>> \mid <<symbol>>y<</symbol>>)$<</equation>> (the proof for <<equation>>$<<symbol>>K<</symbol>>(<<symbol>>z<</symbol>> \mid <<symbol>>x<</symbol>>)$<</equation>> is similar). For the sake of obtaining a contradiction, suppose that <<equation>>$<<symbol>>K<</symbol>>(<<symbol>>z<</symbol>> \mid <<symbol>>y<</symbol>>) <  <<symbol>>m<</symbol>> - <<symbol>>\alpha<</symbol>>(<<symbol>>n<</symbol>>) - 11 \log <<symbol>>n<</symbol>> = <<symbol>>m<</symbol>> - <<symbol>>t<</symbol>>$<</equation>>. Let <<equation>>$<<symbol>><<symbol>>t<</symbol>><</symbol>>_1 = <<symbol>>K<</symbol>>(<<symbol>>x<</symbol>>)$<</equation>>. Note that <<equation>>$<<symbol>><<symbol>>t<</symbol>><</symbol>>_1 \geq <<symbol>>s<</symbol>>(<<symbol>>n<</symbol>>)$<</equation>>. Let <<equation>>$B = \{u \in \zo^n \mid K(u) \leq t_1\}$<</equation>>. Note that <<equation>>$2^{<<symbol>><<symbol>><<symbol>>t<</symbol>><</symbol>><</symbol>>_1 + 1} > <<symbol>>|<<symbol>><</symbol>>B<<symbol>><</symbol>>|<</symbol>> \geq 2^{<<symbol>><<symbol>>s<</symbol>>(<<symbol>>n<</symbol>>)<<symbol>>/<</symbol>><</symbol>>2} = <<symbol>>S<</symbol>>$<</equation>>. We say that a column <<equation>>$<<symbol>>u<</symbol>> \in [<<symbol>>N<</symbol>>]$<</equation>> is \emph{bad for color <<equation>>$<<symbol>>a<</symbol>> \in [<<symbol>>M<</symbol>>]$<</equation>> and <<equation>>$<<symbol>>B<</symbol>>$<</equation>>} if
+the number of occurrences of <<equation>>$<<symbol>>a<</symbol>>$<</equation>> in the <<equation>>$<<symbol>>B<</symbol>> \times \{<<symbol>>u<</symbol>>\}$<</equation>> subrectangle of <<equation>>$<<symbol>>T<</symbol>>$<</equation>> is greater that <<equation>>$(2<<symbol>>/<<symbol>><</symbol>>M<</symbol>>) \cdot <<symbol>>|<<symbol>><</symbol>>B<<symbol>><</symbol>>|<</symbol>>$<</equation>> and we say that <<equation>>$<<symbol>>u<</symbol>>$<</equation>> is \emph{bad for <<equation>>$<<symbol>>B<</symbol>>$<</equation>>} if it is bad for some color <<equation>>$<<symbol>>a<</symbol>>$<</equation>> and <<equation>>$<<symbol>>B<</symbol>>$<</equation>>. For every <<equation>>$<<symbol>>a<</symbol>> \in [<<symbol>>M<</symbol>>]$<</equation>>, the number of <<equation>>$<<symbol>>u<</symbol>>$<</equation>>'s that are bad for <<equation>>$<<symbol>>a<</symbol>>$<</equation>> and <<equation>>$<<symbol>>B<</symbol>>$<</equation>> is <<equation>>$< <<symbol>>S<</symbol>>$<</equation>> (because <<equation>>$<<symbol>>T<</symbol>>$<</equation>> is <<equation>>$(<<symbol>>S<</symbol>>,<<symbol>>D<</symbol>>)$<</equation>>-balanced). Therefore, the number of <<equation>>$<<symbol>>u<</symbol>>$<</equation>>'s that are bad for <<equation>>$<<symbol>>B<</symbol>>$<</equation>> is <<equation>>$< <<symbol>>M<</symbol>> \cdot <<symbol>>S<</symbol>>$<</equation>>. Given <<equation>>$<<symbol>><<symbol>>t<</symbol>><</symbol>>_1$<</equation>> and a description of the table <<equation>>$<<symbol>>T<</symbol>>$<</equation>>, one can enumerate the set of <<equation>>$<<symbol>>u<</symbol>>$<</equation>>'s that are bad for <<equation>>$<<symbol>>B<</symbol>>$<</equation>>. This implies that any <<equation>>$<<symbol>>u<</symbol>>$<</equation>> that is bad for <<equation>>$<<symbol>>B<</symbol>>$<</equation>> can be described by its rank in this enumeration and the information needed to perform the enumeration. Therefore, if <<equation>>$<<symbol>>u<</symbol>>$<</equation>> is bad for <<equation>>$<<symbol>>B<</symbol>>$<</equation>>,
+\[
+\begin{array}{ll}
+K(u) & \leq \log (M \cdot S) + 2 (\log t_1 + \log n + \log s(n))+O(1) \\
+& \leq m + s(n)/2 + 6\log n +O(1) \\
+& < s(n),
+\end{array}
+\]
+provided <<equation>>$<<symbol>>n<</symbol>>$<</equation>> is large enough.
+Since <<equation>>$<<symbol>>K<</symbol>>(<<symbol>>y<</symbol>>) \geq <<symbol>>s<</symbol>>(<<symbol>>n<</symbol>>)$<</equation>>, it follows that <<equation>>$<<symbol>>y<</symbol>>$<</equation>> is good for <<equation>>$<<symbol>>B<</symbol>>$<</equation>>.
+
+Let <<equation>>$<<symbol>>A<</symbol>> = \{<<symbol>>w<</symbol>> \in [<<symbol>>M<</symbol>>] \mid <<symbol>>K<</symbol>>(<<symbol>>w<</symbol>> \mid <<symbol>>y<</symbol>>) < <<symbol>>m<</symbol>>- <<symbol>>t<</symbol>>\}$<</equation>>.  We have <<equation>>$<<symbol>>|<<symbol>><</symbol>>A<<symbol>><</symbol>>|<</symbol>> < 2^{<<symbol>><<symbol>>m<</symbol>>-<<symbol>>t<</symbol>><</symbol>>}$<</equation>> and, by our assumption, <<equation>>$<<symbol>>z<</symbol>> \in <<symbol>>A<</symbol>>$<</equation>>. Let <<equation>>$<<symbol>>G<</symbol>>$<</equation>> be the subset of <<equation>>$<<symbol>>B<</symbol>>$<</equation>> of positions in the strip <<equation>>$<<symbol>>B<</symbol>> \times \{<<symbol>>y<</symbol>>\}$<</equation>> of <<equation>>$<<symbol>>T<</symbol>>$<</equation>> having a color from <<equation>>$<<symbol>>A<</symbol>>$<</equation>> (formally, <<equation>>$<<symbol>>G<</symbol>>= {\rm <<symbol>><<symbol>>p<<symbol>><</symbol>>r<<symbol>><</symbol>>o<<symbol>><</symbol>>j<</symbol>><</symbol>>}_1 (<<symbol>><<symbol>>T<</symbol>><</symbol>>^{-1}(<<symbol>>A<</symbol>>) \cap (<<symbol>>B<</symbol>> \times \{<<symbol>>y<</symbol>>\})$<</equation>>) . Note that <<equation>>$<<symbol>>x<</symbol>>$<</equation>> is in <<equation>>$<<symbol>>G<</symbol>>$<</equation>>. Each color <<equation>>$<<symbol>>a<</symbol>>$<</equation>> occurs in the strip <<equation>>$<<symbol>>B<</symbol>> \times \{<<symbol>>y<</symbol>>\}$<</equation>> at most <<equation>>$(2<<symbol>>/<<symbol>><</symbol>>M<</symbol>>) \cdot <<symbol>>|<<symbol>><</symbol>>B<<symbol>><</symbol>>|<</symbol>>$<</equation>> (because <<equation>>$<<symbol>>y<</symbol>>$<</equation>> is good for <<equation>>$<<symbol>>B<</symbol>>$<</equation>>). Therefore the size of <<equation>>$<<symbol>>G<</symbol>>$<</equation>> is bounded
+by 
+\[
+|A| \cdot(2/M) \cdot |B| \leq 2^{m-t} \cdot(2/M) \cdot 2^{t_1+1} < 2^{t_1 - t + 2}.
+\]
+Given <<equation>>$<<symbol>>y<</symbol>>, <<symbol>><<symbol>>t<</symbol>><</symbol>>_1, <<symbol>>m<</symbol>>-<<symbol>>t<</symbol>>$<</equation>> and a description of the table <<equation>>$<<symbol>>T<</symbol>>$<</equation>>, one can enumerate the set <<equation>>$<<symbol>>G<</symbol>>$<</equation>>. Therefore, <<equation>>$<<symbol>>x<</symbol>>$<</equation>> can be described by its rank in this enumeration and by the information needed to perform the enumeration. It follows that
+\[
+\begin{array}{ll}
+K(x \mid y) & \leq t_1 - t + 2 + 2(\log t_1 + \log(m-t) + \log n + \log s(n)) + O(1) \\
+& \leq t_1 - t + 8 \log n +O(1) \\
+& = t_1 - \alpha(n) - 3 \log n + O(1)\\
+& = K(x) - \alpha(n) - 3 \log n +O(1).
+\end{array}
+\]
+Since <<equation>>$<<symbol>>K<</symbol>>(<<symbol>>x<<symbol>><</symbol>>y<</symbol>>) \leq <<symbol>>K<</symbol>>(<<symbol>>y<</symbol>>) + <<symbol>>K<</symbol>>(<<symbol>>x<</symbol>> \mid <<symbol>>y<</symbol>>) + 2 \log <<symbol>>n<</symbol>> + <<symbol>>O<</symbol>>(1)$<</equation>> (this holds for every <<equation>>$<<symbol>>n<</symbol>>$<</equation>>-bit strings <<equation>>$<<symbol>>x<</symbol>>$<</equation>> and <<equation>>$<<symbol>>y<</symbol>>$<</equation>>), we obtain
+\[
+\begin{array}{ll}
+K(x y) & \leq K(y) + K(x) - \alpha(n) - 3 \log n + 2 \log n + O(1) \\
+& \leq K(y) + K(x) - \alpha(n) - \log n + O(1),
+\end{array}
+\]
+which contradicts that <<equation>>$<<symbol>>x<</symbol>>$<</equation>> and <<equation>>$<<symbol>>y<</symbol>>$<</equation>> have dependency at most <<equation>>$<<symbol>>\alpha<</symbol>>(<<symbol>>n<</symbol>>)$<</equation>>.
+\qed
+
+
+\section{Increasing the randomness rate of sequences}
+We prove that the randomness rate of sequences can be effectively increased even from two sequences having linear dependence.
+\begin{theorem}
+\label{t:sequences}
+There exists a truth-table reduction <<equation>>$<<symbol>>f<</symbol>>$<</equation>> with the following property. For any rational numbers <<equation>>$<<symbol>>\tau <</symbol>>> 0$<</equation>> and <<equation>>$<<symbol>>\delta <</symbol>>>0$<</equation>>, there exists <<equation>>$<<symbol>>\alpha <</symbol>>> 0$<</equation>> such that for any sequences <<equation>>$<<symbol>>x<</symbol>>$<</equation>> and <<equation>>$<<symbol>>y<</symbol>>$<</equation>> with randomness rate at least <<equation>>$<<symbol>>\tau<</symbol>>$<</equation>> and dependency at most <<equation>>$<<symbol>>\alpha <<symbol>><</symbol>>n<</symbol>>$<</equation>>, <<equation>>$<<symbol>>f<</symbol>>(<<symbol>>x<</symbol>>,<<symbol>>y<</symbol>>, <<symbol>>\tau<</symbol>>, <<symbol>>\delta<</symbol>>)$<</equation>> has randomness rate at least <<equation>>$1-<<symbol>>\delta<</symbol>>$<</equation>>. Moreover, the reduction <<equation>>$<<symbol>>f<</symbol>>$<</equation>> is uniform in <<equation>>$<<symbol>>x<</symbol>>,<<symbol>>y<</symbol>>, <<symbol>>\tau<</symbol>>$<</equation>> and <<equation>>$<<symbol>>\delta<</symbol>>$<</equation>>.
+\end{theorem}
+\proof~The plan is as follows. We split <<equation>>$<<symbol>>x<</symbol>>$<</equation>> into strings <<equation>>$<<symbol>><<symbol>>x<</symbol>><</symbol>>_1 <<symbol>><<symbol>>x<</symbol>><</symbol>>_2 \ldots <<symbol>><<symbol>>x<</symbol>>_<<symbol>>i<</symbol>><</symbol>> \ldots$<</equation>> and <<equation>>$<<symbol>>y<</symbol>>$<</equation>> into strings <<equation>>$<<symbol>><<symbol>>y<</symbol>><</symbol>>_1 <<symbol>><<symbol>>y<</symbol>><</symbol>>_2 \ldots <<symbol>><<symbol>>y<</symbol>>_<<symbol>>i<</symbol>><</symbol>> \ldots$<</equation>>. For each <<equation>>$<<symbol>>i<</symbol>>$<</equation>>, let <<equation>>$\barx_{i} = x_1 \ldots x_i$<</equation>> and <<equation>>$\bary_{i} = y_1 \ldots y_i$<</equation>>. The splitting is done in such a way that <<equation>>$<<symbol>><<symbol>>x<</symbol>>_<<symbol>>i<</symbol>><</symbol>>$<</equation>> and <<equation>>$<<symbol>><<symbol>>y<</symbol>>_<<symbol>>i<</symbol>><</symbol>>$<</equation>> have complexity close to <<equation>>$<<symbol>>\tau <<symbol>><</symbol>>|<<symbol>><<symbol>><</symbol>>x<</symbol>>_<<symbol>>i<<symbol>><</symbol>><</symbol>>|<</symbol>>$<</equation>> and respectively close to <<equation>>$<<symbol>>\tau <<symbol>><</symbol>>|<<symbol>><<symbol>><</symbol>>y<</symbol>>_<<symbol>>i<<symbol>><</symbol>><</symbol>>|<</symbol>>$<</equation>> even conditioned by <<equation>>$\barx_{i-1} \bary_{i-1}$<</equation>>. Next, for each <<equation>>$<<symbol>>i<</symbol>>$<</equation>>, we construct a balanced table <<equation>>$<<symbol>><<symbol>>T<</symbol>>_<<symbol>>i<</symbol>><</symbol>>$<</equation>> with appropriate parameters and take <<equation>>$<<symbol>><<symbol>>z<</symbol>>_<<symbol>>i<</symbol>><</symbol>> = <<symbol>>T<</symbol>>(<<symbol>><<symbol>>x<</symbol>>_<<symbol>>i<</symbol>><</symbol>>, <<symbol>><<symbol>>y<</symbol>>_<<symbol>>i<</symbol>><</symbol>>)$<</equation>>. The output of the truth-table reduction is the sequence <<equation>>$<<symbol>>z<</symbol>> = <<symbol>><<symbol>>z<</symbol>><</symbol>>_1 <<symbol>><<symbol>>z<</symbol>><</symbol>>_2 \ldots <<symbol>><<symbol>>z<</symbol>>_<<symbol>>i<</symbol>><</symbol>> \ldots$<</equation>>. As in the case of strings, it follows that <<equation>>$<<symbol>><<symbol>>z<</symbol>>_<<symbol>>i<</symbol>><</symbol>>$<</equation>> has high complexity and actually this holds even conditioned by <<equation>>$\barz_{i-1} = z_1 z_2 \ldots z_{i-1}$<</equation>>. So far, the proof is as in~\cite{zim:c:csr}. The point of departure is that in order for the construction to work with inputs having linear dependence, we need to take the length of <<equation>>$<<symbol>><<symbol>>z<</symbol>>_<<symbol>>i<</symbol>><</symbol>>$<</equation>> exponential in <<equation>>$<<symbol>>i<</symbol>>$<</equation>> (rather than quadratic in <<equation>>$<<symbol>>i<</symbol>>$<</equation>>, which was the case in~\cite{zim:c:csr}). This creates difficulties in showing that every ``intermediate'' prefix of <<equation>>$<<symbol>>z<</symbol>>$<</equation>> (\ie, a string that is an extension of <<equation>>$\barz_{i-1}$<</equation>> and a prefix of <<equation>>$\barz_i$<</equation>>, for some <<equation>>$<<symbol>>i<</symbol>>$<</equation>>) has high complexity. To handle this, we argue that even prefixes of <<equation>>$<<symbol>><<symbol>>z<</symbol>>_<<symbol>>i<</symbol>><</symbol>>$<</equation>> have relatively high Kolmogorov complexity conditioned by <<equation>>$\barx_{i-1} \bary_{i-1}$<</equation>> (see Lemma~\ref{l:block}) and then the argument for ``intermediate'' strings  forks into two cases depending on whether the string is long or short (see Lemma~\ref{l:combination}).
+
+We proceed with the formal proof.
+
+We fix rational numbers <<equation>>$<<symbol>>\tau <</symbol>>> 0$<</equation>> and <<equation>>$<<symbol>>\delta <</symbol>>> 0$<</equation>>.
+Let <<equation>>$<<symbol>>x<</symbol>>$<</equation>> and <<equation>>$<<symbol>>y<</symbol>>$<</equation>> be sequences with randomness rate at least <<equation>>$<<symbol>>\tau<</symbol>>$<</equation>>.
+Let <<equation>>$<<symbol>>\epsilon <</symbol>>= <<symbol>>\delta<<symbol>><</symbol>>/<</symbol>>4$<</equation>>. 
+
+We split <<equation>>$<<symbol>>x<</symbol>> = <<symbol>><<symbol>>x<</symbol>><</symbol>>_1 <<symbol>><<symbol>>x<</symbol>><</symbol>>_2 \ldots <<symbol>><<symbol>>x<</symbol>>_<<symbol>>i<</symbol>><</symbol>> \ldots$<</equation>> and <<equation>>$<<symbol>>y<</symbol>> = <<symbol>><<symbol>>y<</symbol>><</symbol>>_1 <<symbol>><<symbol>>y<</symbol>><</symbol>>_2 \ldots <<symbol>><<symbol>>y<</symbol>>_<<symbol>>i<</symbol>><</symbol>> \ldots$<</equation>> and let <<equation>>$<<symbol>><<symbol>>n<</symbol>>_<<symbol>>i<</symbol>><</symbol>> = <<symbol>>|<<symbol>><<symbol>><</symbol>>x<</symbol>>_<<symbol>>i<<symbol>><</symbol>><</symbol>>|<</symbol>> = <<symbol>>|<<symbol>><<symbol>><</symbol>>y<</symbol>>_<<symbol>>i<<symbol>><</symbol>><</symbol>>|<</symbol>>$<</equation>>.
+We'll take <<equation>>$<<symbol>><<symbol>>n<</symbol>>_<<symbol>>i<</symbol>><</symbol>> = <<symbol>><<symbol>>B<</symbol>>^<<symbol>>i<</symbol>><</symbol>>$<</equation>> for some constant <<equation>>$<<symbol>>B<</symbol>>$<</equation>>, given by the next lemma.
+\begin{lemma}
+\label{l:B}
+There exists a constant <<equation>>$<<symbol>>B<</symbol>> > 1$<</equation>> with the following properties:
+\begin{itemize}
+	\item[(a)] For every <<equation>>$<<symbol>>i<</symbol>>$<</equation>>, <<equation>>$K(x_i \mid \barx_{i-1} \bary_{i-1}) \geq 0.99 \tau n_i$<</equation>> and <<equation>>$K(y_i \mid \barx_{i-1} \bary_{i-1}) \geq 0.99 \tau n_i$<</equation>>.
+	\item[(b)] For any <<equation>>$<<symbol>>\alpha <</symbol>>> 0$<</equation>>, if <<equation>>$(<<symbol>>x<</symbol>>,<<symbol>>y<</symbol>>)$<</equation>> have dependency <<equation>>$<<symbol>>\alpha <<symbol>><</symbol>>n<</symbol>>$<</equation>>,
+then, for all <<equation>>$<<symbol>>i<</symbol>>$<</equation>>
+\[
+K(x_iy_i \mid \barx_{i-1}\bary_{i-1}) \geq K(x_i \mid \barx_{i-1}\bary_{i-1}) + K(y_i \mid \barx_{i-1}\bary_{i-1}) - (2.1) \cdot \alpha \cdot n_i.
+\]
+\end{itemize}
+\end{lemma}
+\proof (Sketch.) The proof is similar to an analogous result from~\cite{zim:c:csr}.  For (a), it is easy to show that <<equation>>$<<symbol>>B<</symbol>>$<</equation>> can be taken  large enough so that the length of <<equation>>$<<symbol>><<symbol>>x<</symbol>>_<<symbol>>i<</symbol>><</symbol>>$<</equation>> is so much larger than the length of <<equation>>$\barxy$<</equation>> that the complexity of <<equation>>$<<symbol>><<symbol>>x<</symbol>>_<<symbol>>i<</symbol>><</symbol>>$<</equation>> does not decrease too much if it is conditioned by <<equation>>$\barxy$<</equation>>.
+
+The proof of (b) passes through the following intermediate steps:
+
+(1) We show that for <<equation>>$<<symbol>>B<</symbol>>$<</equation>>, <<equation>>$<<symbol>>i<</symbol>>$<</equation>> and <<equation>>$<<symbol>>j<</symbol>>$<</equation>> sufficiently large, $$K(\bary_i \barx_j) = K(\bary_i) + K(\barx_j) \pm 1.001 \alpha (B^i + B^j).$$ (This is the analogue of Lemma 4.5 from~\cite{zim:c:csr}).
+
+(2) We show that <<equation>>$<<symbol>>B<</symbol>>$<</equation>>, <<equation>>$<<symbol>>i<</symbol>>$<</equation>> and <<equation>>$<<symbol>>j<</symbol>>$<</equation>> sufficiently large, $$K(x_i \mid \barx_{i-1} \bary_j) = K(x_i \mid \barx_{i-1}) \pm 2.004 \alpha (B^i + B^j).$$ (This is the analogue of Lemma 4.6 from~\cite{zim:c:csr}; the constants are not optimized).
+
+Next, the statement can be shown similarly to Lemma 4.7 from~\cite{zim:c:csr}).
+\qed
+
+
+For the rest of this section, we fix the following parameters as follows:
+\begin{itemize}
+\item The constant <<equation>>$<<symbol>>B<</symbol>>$<</equation>> is as given by Lemma~\ref{l:B},
+\item <<equation>>$<<symbol>>\alpha <</symbol>>= (1<<symbol>>/<</symbol>>3) <<symbol>><<symbol>>\epsilon<</symbol>><</symbol>>^2 \cdot(0.97<<symbol>>\tau<</symbol>>) \cdot (1<<symbol>>/<<symbol>><</symbol>>B<</symbol>>)$<</equation>>.
+
+\item For each <<equation>>$<<symbol>>i<</symbol>>$<</equation>>, 
+<<equation>>$<<symbol>><<symbol>>N<</symbol>>_<<symbol>>i<</symbol>><</symbol>> = 2^{<<symbol>><<symbol>><<symbol>>n<</symbol>>_<<symbol>>i<</symbol>><</symbol>><</symbol>>}$<</equation>>,
+<<equation>>$<<symbol>><<symbol>>S<</symbol>>_<<symbol>>i<</symbol>><</symbol>> = 2^{(0.98<<symbol>><<symbol>>\tau<</symbol>>)\cdot <<symbol>><<symbol>>n<</symbol>>_<<symbol>>i<</symbol>><</symbol>><</symbol>>}$<</equation>>,
+<<equation>>$<<symbol>><<symbol>>m<</symbol>>_<<symbol>>i<</symbol>><</symbol>> = (0.97 <<symbol>>\tau<</symbol>>) \cdot <<symbol>><<symbol>>n<</symbol>>_<<symbol>>i<</symbol>><</symbol>>$<</equation>>,
+<<equation>>$<<symbol>><<symbol>>M<</symbol>>_<<symbol>>i<</symbol>><</symbol>> = 2^{<<symbol>><<symbol>><<symbol>>m<</symbol>>_<<symbol>>i<</symbol>><</symbol>><</symbol>>}$<</equation>>
+<<equation>>$<<symbol>><<symbol>>D<</symbol>>_<<symbol>>i<</symbol>><</symbol>> = <<symbol>><<symbol>>M<</symbol>>_<<symbol>>i<</symbol>><</symbol>>$<</equation>>.
+\end{itemize}
+The parameters satisfy the requirements of Lemma~\ref{l-balancedtable} and, thus, for each <<equation>>$<<symbol>>i<</symbol>>$<</equation>>, there exists a table <<equation>>$T_i : [N_i] \times [N_i] \mapping[M_i]$<</equation>> that is <<equation>>$(<<symbol>><<symbol>>S<</symbol>>_<<symbol>>i<</symbol>><</symbol>>, <<symbol>><<symbol>>D<</symbol>>_<<symbol>>i<</symbol>><</symbol>>)$<</equation>>-balanced. For every <<equation>>$<<symbol>>i<</symbol>>$<</equation>>, given <<equation>>$<<symbol>>i<</symbol>>$<</equation>>, a smallest (in some canonical sense) such table <<equation>>$<<symbol>><<symbol>>T<</symbol>>_<<symbol>>i<</symbol>><</symbol>>$<</equation>> can be constructed by exhaustive search. We fix these tables <<equation>>$<<symbol>><<symbol>>T<</symbol>>_<<symbol>>i<</symbol>><</symbol>>$<</equation>> and define <<equation>>$<<symbol>><<symbol>>z<</symbol>>_<<symbol>>i<</symbol>><</symbol>> = <<symbol>><<symbol>>T<</symbol>>_<<symbol>>i<</symbol>><</symbol>>(<<symbol>><<symbol>>x<</symbol>>_<<symbol>>i<</symbol>><</symbol>>, <<symbol>><<symbol>>y<</symbol>>_<<symbol>>i<</symbol>><</symbol>>)$<</equation>> and next <<equation>>$<<symbol>>z<</symbol>> = <<symbol>><<symbol>>z<</symbol>><</symbol>>_1 <<symbol>><<symbol>>z<</symbol>><</symbol>>_2 \ldots <<symbol>><<symbol>>z<</symbol>>_<<symbol>>i<</symbol>><</symbol>> \ldots$<</equation>>. Clearly <<equation>>$<<symbol>>z<</symbol>>$<</equation>> is constructed by a truth-table reduction <<equation>>$<<symbol>>f<</symbol>>$<</equation>> from input sequences <<equation>>$<<symbol>>x<</symbol>>$<</equation>> and <<equation>>$<<symbol>>y<</symbol>>$<</equation>>. We will show that <<equation>>$<<symbol>>z<</symbol>>$<</equation>> has randomness rate at least <<equation>>$1 - <<symbol>>\delta<</symbol>>$<</equation>>.
+\begin{lemma}
+\label{l:block}
+For every <<equation>>$<<symbol>>i<</symbol>>$<</equation>> sufficiently large, each prefix <<equation>>$<<symbol>>v<</symbol>>$<</equation>> of <<equation>>$<<symbol>><<symbol>>z<</symbol>>_<<symbol>>i<</symbol>><</symbol>>$<</equation>> has <<equation>>$K(v \mid \barxy) \geq |v| - 3\alpha \cdot n_i$<</equation>>.
+\end{lemma}
+\proof
+Suppose that there is a prefix <<equation>>$<<symbol>>v<</symbol>>$<</equation>> of <<equation>>$<<symbol>><<symbol>>z<</symbol>>_<<symbol>>i<</symbol>><</symbol>>$<</equation>> with <<equation>>$K(v \mid \barxy) < |v| - 3\alpha \cdot n_i$<</equation>>. We define:
+\begin{itemize}
+	\item <<equation>>$t_1 = K(x_i \mid \barxy)$<</equation>>, <<equation>>$t_2 = K(y_i \mid \barxy)$<</equation>>,
+	\item <<equation>>$B_1 = \{u \in \zo^{n_i} \mid K(u \mid \barxy) \leq t_1 \}$<</equation>>, 
+	
+	\item <<equation>>$B_2 = \{u \in \zo^{n_i} \mid K(u \mid \barxy) \leq t_2 \}$<</equation>>,
+	\item <<equation>>$A= \{w \in \zo^{|v|} \mid K(w \mid \barxy) < |v| - 3 \alpha \cdot n_i\}$<</equation>>.
+\end{itemize}
+Note that <<equation>>$<<symbol>><<symbol>>t<</symbol>><</symbol>>_1 \geq 0.99 <<symbol>>\tau <</symbol>>\cdot <<symbol>><<symbol>>n<</symbol>>_<<symbol>>i<</symbol>><</symbol>>$<</equation>>, <<equation>>$<<symbol>><<symbol>>t<</symbol>><</symbol>>_2 \geq 0.99 <<symbol>>\tau <</symbol>>\cdot <<symbol>><<symbol>>n<</symbol>>_<<symbol>>i<</symbol>><</symbol>>$<</equation>> (by Lemma~\ref{l:B}), <<equation>>$2^{<<symbol>><<symbol>><<symbol>>t<</symbol>><</symbol>><</symbol>>_1 + 1} > <<symbol>>|<<symbol>><<symbol>><</symbol>>B<</symbol>><</symbol>>_1<<symbol>>|<</symbol>> \geq 2^{0.98 <<symbol>><<symbol>>\tau <</symbol>>\cdot <<symbol>><<symbol>>n<</symbol>>_<<symbol>>i<</symbol>><</symbol>><</symbol>>} = <<symbol>><<symbol>>S<</symbol>>_<<symbol>>i<</symbol>><</symbol>>$<</equation>>, <<equation>>$2^{<<symbol>><<symbol>><<symbol>>t<</symbol>><</symbol>><</symbol>>_2 + 1} > <<symbol>>|<<symbol>><<symbol>><</symbol>>B<</symbol>><</symbol>>_2<<symbol>>|<</symbol>> \geq 2^{0.98 <<symbol>><<symbol>>\tau <</symbol>>\cdot <<symbol>><<symbol>>n<</symbol>>_<<symbol>>i<</symbol>><</symbol>><</symbol>>} = <<symbol>><<symbol>>S<</symbol>>_<<symbol>>i<</symbol>><</symbol>>$<</equation>> and <<equation>>$<<symbol>>|<<symbol>><</symbol>>A<<symbol>><</symbol>>|<</symbol>> < 2^{<<symbol>><<symbol>>|<<symbol>><</symbol>>v<<symbol>><</symbol>>|<</symbol>> - 3<<symbol>>\alpha <<symbol>><<symbol>><</symbol>>n<</symbol>>_<<symbol>>i<</symbol>><</symbol>><</symbol>>}$<</equation>>. Let <<equation>>$<<symbol>>G<</symbol>>$<</equation>> be the set of entries (represented by their coordinates in the table) in the <<equation>>$<<symbol>><<symbol>>B<</symbol>><</symbol>>_1 \times <<symbol>><<symbol>>B<</symbol>><</symbol>>_2$<</equation>> rectangle
+of the table <<equation>>$<<symbol>><<symbol>>T<</symbol>>_<<symbol>>i<</symbol>><</symbol>>$<</equation>> that have a color with a prefix in <<equation>>$<<symbol>>A<</symbol>>$<</equation>>. By Lemma~\ref{l-bal-table-refined}, the cardinality of <<equation>>$<<symbol>>G<</symbol>>$<</equation>>  is at most
+\[
+\begin{array}{ll}
+2 \cdot \frac{|A|}{2^{|v|}} \cdot |B_1 \times B_2| & \leq 2 \cdot 2^{|v| - 3\alpha n_i} \cdot \frac{1}{2^{|v|}} \cdot 2^{t_1 + 1} \cdot 2^{t_2 + 1} \\
+& = 2^{t_1 + t_2 - 3 \alpha n_i +3}.
+\end{array}
+\]
+Note that <<equation>>$(<<symbol>><<symbol>>x<</symbol>>_<<symbol>>i<</symbol>><</symbol>>, <<symbol>><<symbol>>y<</symbol>>_<<symbol>>i<</symbol>><</symbol>>)$<</equation>> belongs to <<equation>>$<<symbol>>G<</symbol>>$<</equation>> and that <<equation>>$<<symbol>>G<</symbol>>$<</equation>> can be enumerated given <<equation>>$\barxy$<</equation>>, <<equation>>$<<symbol>><<symbol>>t<</symbol>><</symbol>>_1, <<symbol>><<symbol>>t<</symbol>><</symbol>>_2$<</equation>>, and <<equation>>$<<symbol>>|<<symbol>><</symbol>>v<<symbol>><</symbol>>|<</symbol>> - 3<<symbol>>\alpha <</symbol>>\cdot <<symbol>><<symbol>>n<</symbol>>_<<symbol>>i<</symbol>><</symbol>>$<</equation>> (observe that <<equation>>$<<symbol>>i<</symbol>>$<</equation>> can be determined from <<equation>>$\barxy$<</equation>> and thus the table <<equation>>$<<symbol>><<symbol>>T<</symbol>>_<<symbol>>i<</symbol>><</symbol>>$<</equation>> can be constructed). Therefore <<equation>>$<<symbol>><<symbol>>x<</symbol>>_<<symbol>>i<</symbol>><</symbol>> <<symbol>><<symbol>>y<</symbol>>_<<symbol>>i<</symbol>><</symbol>>$<</equation>> can be described by its rank in the enumeration of <<equation>>$<<symbol>>G<</symbol>>$<</equation>> and by the information needed to perform this enumeration. This implies 
+\[\begin{array}{ll}
+K(x_i y_i \mid \barxy) & \leq t_1 + t_2 - 3\alpha \cdot n_i + 2(\log t_1 + \log t_2 + \log(|v| - 3\alpha n_i)) + O(1) \\
+& \leq t_1 + t_2 - 3\alpha \cdot n_i + O(\log n_i).
+\end{array}
+\]
+On the other hand, by Lemma~\ref{l:B},
+\[
+K(x_i y_i \mid \barxy) \geq K(x_i \mid \barxy) + K(y_i \mid \barxy) - (2.1) \cdot \alpha \cdot n_i.
+\]
+If <<equation>>$<<symbol>>i<</symbol>>$<</equation>> is large, the last two inequalities conflict each other and we obtain a contradiction.
+\qed
+\smallskip
+
+The next lemma finishes the proof of Theorem~\ref{t:sequences}.
+\begin{lemma}
+\label{l:combination}
+For each sufficiently long prefix <<equation>>$<<symbol>>w<</symbol>>$<</equation>> of <<equation>>$<<symbol>>z<</symbol>>$<</equation>>, <<equation>>$<<symbol>>K<</symbol>>(<<symbol>>w<</symbol>>) \geq (1-4<<symbol>>\epsilon<</symbol>>) <<symbol>>|<<symbol>><</symbol>>w<<symbol>><</symbol>>|<</symbol>>$<</equation>>.
+\end{lemma}
+\proof
+For some <<equation>>$<<symbol>>i<</symbol>>$<</equation>>, the prefix <<equation>>$<<symbol>>w<</symbol>>$<</equation>> is of the form <<equation>>$<<symbol>>w<</symbol>> = <<symbol>><<symbol>>z<</symbol>><</symbol>>_1 \ldots <<symbol>><<symbol>>z<</symbol>>_{<<symbol>>i<</symbol>><</symbol>>-1} <<symbol>><<symbol>>v<</symbol>>_<<symbol>>i<</symbol>><</symbol>>$<</equation>>, with <<equation>>$<<symbol>><<symbol>>v<</symbol>>_<<symbol>>i<</symbol>><</symbol>>$<</equation>> a prefix of <<equation>>$<<symbol>><<symbol>>z<</symbol>>_<<symbol>>i<</symbol>><</symbol>>$<</equation>>.
+Let <<equation>>$<<symbol>>\gamma <</symbol>>= (1<<symbol>>/<<symbol>><</symbol>>\epsilon<</symbol>>) \cdot (3<<symbol>>\alpha<</symbol>>)$<</equation>>. We consider two cases:
+
+{\bf Case 1: <<equation>>$<<symbol>><<symbol>>v<</symbol>>_<<symbol>>i<</symbol>><</symbol>>$<</equation>> is long.} Suppose <<equation>>$<<symbol>>|<<symbol>><<symbol>><</symbol>>v<</symbol>>_<<symbol>>i<<symbol>><</symbol>><</symbol>>|<</symbol>> \geq <<symbol>>\gamma <</symbol>>\cdot <<symbol>><<symbol>>n<</symbol>>_<<symbol>>i<</symbol>><</symbol>>$<</equation>>.
+
+Then <<equation>>$K(v_i \mid \barx_{i-1}\bary_{i-1}) \geq |v_i| - 3\alpha \cdot n_i \geq |v_i| - (3\alpha/\gamma) \cdot |v_i| = (1-\epsilon) |v_i|$<</equation>>.
+This implies <<equation>>$<<symbol>>K<</symbol>>(<<symbol>><<symbol>>v<</symbol>>_<<symbol>>i<</symbol>><</symbol>> \mid <<symbol>><<symbol>>z<</symbol>><</symbol>>_1 \ldots <<symbol>><<symbol>>z<</symbol>>_{<<symbol>>i<</symbol>><</symbol>>-1}) > (1-<<symbol>>\epsilon<</symbol>>) \cdot <<symbol>>|<<symbol>><<symbol>><</symbol>>v<</symbol>>_<<symbol>>i<<symbol>><</symbol>><</symbol>>|<</symbol>> - <<symbol>>O<</symbol>>(1) \geq (1-2<<symbol>>\epsilon<</symbol>>)<<symbol>>|<<symbol>><<symbol>><</symbol>>v<</symbol>>_<<symbol>>i<<symbol>><</symbol>><</symbol>>|<</symbol>>$<</equation>>, because each <<equation>>$<<symbol>><<symbol>>z<</symbol>>_<<symbol>>j<</symbol>><</symbol>>$<</equation>> can be constructed from <<equation>>$<<symbol>><<symbol>>x<</symbol>>_<<symbol>>j<</symbol>><</symbol>>$<</equation>> and <<equation>>$<<symbol>><<symbol>>y<</symbol>>_<<symbol>>j<</symbol>><</symbol>>$<</equation>>.
+By induction, it follows that <<equation>>$<<symbol>>K<</symbol>>(<<symbol>><<symbol>>z<</symbol>><</symbol>>_1 <<symbol>><<symbol>>z<</symbol>><</symbol>>_2 \ldots <<symbol>><<symbol>>z<</symbol>>_{<<symbol>>i<</symbol>><</symbol>>-1} <<symbol>><<symbol>>v<</symbol>>_<<symbol>>i<</symbol>><</symbol>>) \geq (1-3<<symbol>>\epsilon<</symbol>>) <<symbol>>|<<symbol>><<symbol>><</symbol>>z<</symbol>><</symbol>>_1 <<symbol>><<symbol>>z<</symbol>><</symbol>>_2 \ldots <<symbol>><<symbol>>z<</symbol>>_{<<symbol>>i<</symbol>><</symbol>>-1} <<symbol>><<symbol>>v<</symbol>>_<<symbol>>i<<symbol>><</symbol>><</symbol>>|<</symbol>>$<</equation>>. For the induction step, the argument goes as follows:
+\[
+\begin{array}{ll}
+K(z_1 z_2 \ldots z_{i-1} v_i) & \geq K(z_1 \ldots z_{i-1}) + K(v_i \mid z_1 \ldots z_{i-1}) \\
+& \quad \quad  - O(\log (m_1 + \ldots + m_{i-1}) + \log(|v_i|)) \\
+& \geq (1-3\epsilon)(m_1 + \ldots + m_{i-1}) + (1-2\epsilon)|v_i| \\
+& \quad \quad - O(\log(m_1 + \ldots +m_{i-1}) + \log |v_i|)) \\
+& > (1-3\epsilon) (m_1 + \ldots + m_{i-1} + |v_i|).
+\end{array}
+\]
+In the last step, we have used the fact that <<equation>>$\log(<<symbol>><<symbol>>m<</symbol>><</symbol>>_1 + \ldots + <<symbol>><<symbol>>m<</symbol>>_{<<symbol>>i<</symbol>><</symbol>>-1}) = <<symbol>>O<</symbol>>(<<symbol>>i<</symbol>>), \log<<symbol>>|<<symbol>><<symbol>><</symbol>>v<</symbol>>_<<symbol>>i<<symbol>><</symbol>><</symbol>>|<</symbol>> = <<symbol>>O<</symbol>>(<<symbol>>i<</symbol>>)$<</equation>> and <<equation>>$<<symbol>>|<<symbol>><<symbol>><</symbol>>v<</symbol>>_<<symbol>>i<<symbol>><</symbol>><</symbol>>|<</symbol>> = <<symbol>>\Omega<</symbol>>(<<symbol>><<symbol>>B<</symbol>>^<<symbol>>i<</symbol>><</symbol>>)$<</equation>>.
+
+{\bf Case 2: <<equation>>$<<symbol>><<symbol>>v<</symbol>>_<<symbol>>i<</symbol>><</symbol>>$<</equation>> is short.} Suppose <<equation>>$<<symbol>>|<<symbol>><<symbol>><</symbol>>v<</symbol>>_<<symbol>>i<<symbol>><</symbol>><</symbol>>|<</symbol>> < <<symbol>>\gamma <</symbol>>\cdot <<symbol>><<symbol>>n<</symbol>>_<<symbol>>i<</symbol>><</symbol>>$<</equation>>.
+
+For a contradiction, suppose <<equation>>$<<symbol>>K<</symbol>>(<<symbol>><<symbol>>z<</symbol>><</symbol>>_1 <<symbol>><<symbol>>z<</symbol>><</symbol>>_2 \ldots <<symbol>><<symbol>>z<</symbol>>_{<<symbol>>i<</symbol>><</symbol>>-1} <<symbol>><<symbol>>v<</symbol>>_<<symbol>>i<</symbol>><</symbol>>) < (1-4<<symbol>>\epsilon<</symbol>>) <<symbol>>|<<symbol>><<symbol>><</symbol>>z<</symbol>><</symbol>>_1 <<symbol>><<symbol>>z<</symbol>><</symbol>>_2 \ldots <<symbol>><<symbol>>z<</symbol>>_{<<symbol>>i<</symbol>><</symbol>>-1} <<symbol>><<symbol>>v<</symbol>>_<<symbol>>i<<symbol>><</symbol>><</symbol>>|<</symbol>>$<</equation>>.
+Note that <<equation>>$<<symbol>><<symbol>>z<</symbol>><</symbol>>_1 <<symbol>><<symbol>>z<</symbol>><</symbol>>_2 \ldots <<symbol>><<symbol>>z<</symbol>>_{<<symbol>>i<</symbol>><</symbol>>-1}$<</equation>> can be reconstructed from a descriptor of <<equation>>$<<symbol>><<symbol>>z<</symbol>><</symbol>>_1 <<symbol>><<symbol>>z<</symbol>><</symbol>>_2 \ldots <<symbol>><<symbol>>z<</symbol>>_{<<symbol>>i<</symbol>><</symbol>>-1} <<symbol>><<symbol>>v<</symbol>>_<<symbol>>i<</symbol>><</symbol>>$<</equation>>.
+This implies 
+\[
+\begin{array}{ll}
+K(z_1 z_2 \ldots z_{i-1})  & < (1-4\epsilon)(m_1 + m_2 +\ldots + m_{i-1} + |v_i|) +O(1) \\
+& =  (1-4 \epsilon) (m_1 + \ldots +m_{i-1}) + (1-4\epsilon)|v_i| + O(1) \\
+& \leq (1-4 \epsilon) (m_1 + \ldots +m_{i-1}) + (1-4\epsilon)\gamma \cdot n_i \\
+& \leq (1-4 \epsilon) (m_1 + \ldots +m_{i-1}) + (1-4\epsilon) \cdot (1/\epsilon) (3 \alpha) \cdot n_i.
+\end{array}
+\]
+But the second term is less than <<equation>>$<<symbol>>\epsilon <</symbol>>(<<symbol>><<symbol>>m<</symbol>><</symbol>>_1 + \ldots + <<symbol>><<symbol>>m<</symbol>>_{<<symbol>>i<</symbol>><</symbol>>-1})$<</equation>> (due to the choice of <<equation>>$<<symbol>>\alpha<</symbol>>$<</equation>>). This implies that <<equation>>$<<symbol>>K<</symbol>>(<<symbol>><<symbol>>z<</symbol>><</symbol>>_1 <<symbol>><<symbol>>z<</symbol>><</symbol>>_2 \ldots <<symbol>><<symbol>>z<</symbol>>_{<<symbol>>i<</symbol>><</symbol>>-1}) \leq (1-3<<symbol>>\epsilon<</symbol>>) (<<symbol>><<symbol>>m<</symbol>><</symbol>>_1 + <<symbol>><<symbol>>m<</symbol>><</symbol>>_2 + \ldots + <<symbol>><<symbol>>m<</symbol>>_{<<symbol>>i<</symbol>><</symbol>>-1})$<</equation>>, which, by Case 1, is not possible.
+\qed
+\qed
+\smallskip
+
+{\bf Note.} It remains an open issue whether from input sequences <<equation>>$<<symbol>>x<</symbol>>$<</equation>> and <<equation>>$<<symbol>>y<</symbol>>$<</equation>> (even independent) one can construct a sequence <<equation>>$<<symbol>>z<</symbol>>$<</equation>> that has high randomness rate conditioned by any one of the input sequences. In other words, the infinite analogue of Theorem~\ref{t:result3} is open.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\newcommand{\etalchar}[1]{<<equation>>$^{#1}$<</equation>>}
+\begin{thebibliography}{FHP{\etalchar{+}}06}
+
+\bibitem[BDS07]{bie-dot-ste:c:haussdimension}
+L.~Bienvenu, D.~Doty, and F.~Stephan.
+\newblock Constructive dimension and weak truth-table degrees.
+\newblock In {\em Computation and Logic in the Real World - Third Conference of
+  Computability in {E}urope}, pages 63--72. Springer-Verlag {\it Lecture Notes
+  in Computer Science \#4497}, 2007.
+\newblock Available as Technical Report arXiv:cs/0701089 at arxiv.org.
+
+\bibitem[Bou05]{bou:j:multiextract}
+J.~Bourgain.
+\newblock More on the sum-product phenomemnon in prime fields and its
+  applications.
+\newblock {\em International Journal of Number Theory}, 1:1--32, 2005.
+
+\bibitem[CZ08]{cal-zim:c:dlt08}
+Cristian~S. Calude and Marius Zimand.
+\newblock Algorithmically independent sequences.
+\newblock In Masami Ito and Masafumi Toyama, editors, {\em Developments in
+  Language Theory}, volume 5257 of {\em Lecture Notes in Computer Science},
+  pages 183--195. Springer, 2008.
+
+\bibitem[FHP{\etalchar{+}}06]{fhpvw:c:extractKol}
+L.~Fortnow, J.~Hitchcock, A.~Pavan, N.V. Vinodchandran, and F.~Wang.
+\newblock Extracting {K}olmogorov complexity with applications to dimension
+  zero-one laws.
+\newblock In {\em Proceedings of the 33rd International Colloquium on Automata,
+  Languages, and Programming}, pages 335--345, Berlin, 2006. Springer-Verlag
+  {\it Lecture Notes in Computer Science \#4051}.
+
+\bibitem[Mil08]{mill:t:KolmExtract}
+J.~Miller.
+\newblock Extracting information is hard, May 2008.
+\newblock Manuscript,
+  http://www.math.uconn.edu/~josephmiller/Papers/dimension.pdf.
+
+\bibitem[NR06]{nie-rei:c:wtt-Kolm-increase}
+A.~Nies and J.~Reimann.
+\newblock A lower cone in the wtt degrees of non-integral effective dimension.
+\newblock In {\em Proceedings of {IMS} workshop on Computational Prospects of
+  Infinity}, Singapore, 2006.
+\newblock To appear.
+
+\bibitem[Raz05]{raz:c:multiextract}
+Ran Raz.
+\newblock Extractors with weak random seeds.
+\newblock In Harold~N. Gabow and Ronald Fagin, editors, {\em STOC}, pages
+  11--20. ACM, 2005.
+
+\bibitem[Rei04]{rei:t:thesis}
+J.~Reimann.
+\newblock Computability and fractal dimension.
+\newblock Technical report, Universit\"{a}t Heidelberg, 2004.
+\newblock Ph.D. thesis.
+
+\bibitem[SV86]{san-vaz:j:quasirand}
+M.~Santha and U.~Vazirani.
+\newblock Generating quasi-random sequences from semi-random sources.
+\newblock {\em Journal of Computer and System Sciences}, 33:75--87, 1986.
+
+\bibitem[Vaz87]{vaz:j:sources}
+Umesh~V. Vazirani.
+\newblock Strong communication complexity or generating quasirandom sequences
+  from two communicating semi-random sources.
+\newblock {\em Combinatorica}, 7(4):375--392, 1987.
+
+\bibitem[VV02]{ver-vyu:j:kolm}
+Nikolai~K. Vereshchagin and Michael~V. Vyugin.
+\newblock Independent minimum length programs to translate between given
+  strings.
+\newblock {\em Theor. Comput. Sci.}, 271(1-2):131--143, 2002.
+
+\bibitem[Zim08]{zim:c:csr}
+Marius Zimand.
+\newblock Two sources are better than one for increasing the {K}olmogorov
+  complexity of infinite sequences.
+\newblock In Edward~A. Hirsch, Alexander~A. Razborov, Alexei~L. Semenov, and
+  Anatol Slissenko, editors, {\em CSR}, volume 5010 of {\em Lecture Notes in
+  Computer Science}, pages 326--338. Springer, 2008.
+
+\end{thebibliography}
+
+
+
+
+
+%\bibliography{c:/book-text/theory}
+
+%\bibliographystyle{alpha}
+\end{document}
+
+
+
+
+
+
+
+
